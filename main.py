@@ -282,6 +282,77 @@ body {
     margin-top: 80px;
 }
 
+.footer {
+    background: #2C4A3A;
+    color: white;
+    padding: 3rem 0 1.5rem;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h3 {
+    color: white;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.footer-section p {
+    color: #bfdbfe;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+    color: #bfdbfe;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: white;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: background 0.3s ease;
+}
+
+.social-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1.5rem;
+    text-align: center;
+    color: #bfdbfe;
+    font-size: 0.875rem;
+}
+
 @media (max-width: 768px) {
     .hero h1 {
         font-size: 2.5rem;
@@ -322,6 +393,7 @@ def Navbar():
                 Li(A("Expertise", href="#expertise")),
                 Li(A("Industries", href="#industries")),
                 Li(A("Case Studies", href="#case-studies")),
+                Li(A("Research", href="#research")),
                 Li(A("Contact", href="#contact")),
                 cls="nav-links"
             ),
@@ -478,6 +550,33 @@ def WhyChoose():
         cls="section bg-light"
     )
 
+def Research():
+    projects = [
+        ("Finesspresso", "https://research.finespresso.org/", "Advanced financial research platform leveraging AI for market analysis, sentiment tracking, and quantitative insights."),
+        ("Reinforcement Learning", "https://rl-agents-v2.finespresso.org/login", "Interactive RL agents platform for training and deploying reinforcement learning models in financial trading environments."),
+        ("Hedgefolio", "https://github.com/predictivelabsai/hedgefolio/", "Open-source portfolio optimization framework using modern portfolio theory and machine learning for risk-adjusted returns."),
+        ("Fincode", "https://github.com/predictivelabsai/fincode", "Python library for financial data analysis, backtesting, and algorithmic trading strategy development.")
+    ]
+    
+    return Section(
+        Div(
+            H2("Research & Open Source"),
+            P("Explore our research initiatives and open-source contributions to the AI and finance communities."),
+            Div(
+                *[Div(
+                    H3(name),
+                    P(desc),
+                    A("Learn More →", href=url, target="_blank", style="color: #4A7C59; font-weight: 600; text-decoration: none;"),
+                    cls="card"
+                ) for name, url, desc in projects],
+                cls="grid grid-4"
+            ),
+            cls="container"
+        ),
+        cls="section bg-light",
+        id="research"
+    )
+
 def Contact():
     return Section(
         Div(
@@ -491,6 +590,52 @@ def Contact():
         ),
         cls="contact-section",
         id="contact"
+    )
+
+def PageFooter():
+    return Div(
+        Div(
+            Div(
+                Div(
+                    H3("Predictive Labs"),
+                    P("Transforming enterprises with cutting-edge AI and GenAI solutions."),
+                    Div(
+                        A("🔗", href="https://www.linkedin.com/company/predictive-labs-ltd/", target="_blank", cls="social-icon", title="LinkedIn"),
+                        A("💻", href="https://github.com/predictivelabsai/", target="_blank", cls="social-icon", title="GitHub"),
+                        cls="social-links"
+                    ),
+                    cls="footer-section"
+                ),
+                Div(
+                    H3("Company"),
+                    P("155 Minories Street, Suite 275"),
+                    P("London, EC3N 1AD"),
+                    P("United Kingdom"),
+                    P("Company Number: 14857334"),
+                    cls="footer-section"
+                ),
+                Div(
+                    H3("Research"),
+                    A("Finesspresso", href="https://research.finespresso.org/", target="_blank"),
+                    A("Reinforcement Learning", href="https://rl-agents-v2.finespresso.org/login", target="_blank"),
+                    A("Hedgefolio", href="https://github.com/predictivelabsai/hedgefolio/", target="_blank"),
+                    A("Fincode", href="https://github.com/predictivelabsai/fincode", target="_blank"),
+                    cls="footer-section"
+                ),
+                Div(
+                    H3("Contact"),
+                    A("info@predictivelabs.ai", href="mailto:info@predictivelabs.ai"),
+                    cls="footer-section"
+                ),
+                cls="footer-grid container"
+            ),
+            Div(
+                P("© 2026 Predictive Labs Ltd. All rights reserved."),
+                cls="footer-bottom container"
+            ),
+            cls="container"
+        ),
+        cls="footer"
     )
 
 @rt("/")
@@ -517,9 +662,12 @@ def get():
                 Div(cls="divider"),
                 WhyChoose(),
                 Div(cls="divider"),
+                Research(),
+                Div(cls="divider"),
                 Contact(),
                 cls="main-content"
-            )
+            ),
+            PageFooter()
         )
     )
 
