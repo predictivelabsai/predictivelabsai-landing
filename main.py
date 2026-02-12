@@ -353,6 +353,55 @@ body {
     font-size: 0.875rem;
 }
 
+.team-card {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.team-card h3 {
+    font-size: 1.3rem;
+    color: #2D2D2D;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.team-card .role {
+    color: #4A7C59;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.linkedin-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #0077B5;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s ease;
+}
+
+.linkedin-link:hover {
+    opacity: 0.7;
+}
+
+.linkedin-icon {
+    width: 24px;
+    height: 24px;
+    fill: #0077B5;
+}
+
 @media (max-width: 768px) {
     .hero h1 {
         font-size: 2.5rem;
@@ -394,6 +443,7 @@ def Navbar():
                 Li(A("Industries", href="#industries")),
                 Li(A("Case Studies", href="#case-studies")),
                 Li(A("Research", href="#research")),
+                Li(A("Team", href="#team")),
                 Li(A("Contact", href="#contact")),
                 cls="nav-links"
             ),
@@ -577,6 +627,42 @@ def Research():
         id="research"
     )
 
+def Team():
+    # LinkedIn icon SVG
+    linkedin_svg = '''<svg class="linkedin-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>'''
+    
+    team_members = [
+        ("Julian Kaljuvee", "AI Engineer", "https://www.linkedin.com/in/juliankaljuvee/"),
+        ("Raslen Guesmi", "Data Scientist / Machine Learning Engineer", "https://www.linkedin.com/in/raslen-guesmi/"),
+        ("Siwei Feng", "AI Engineer / Data Scientist", "https://www.linkedin.com/in/siwei-feng-28488a398/"),
+        ("Chenhao Xue", "Quantitative Research Consultant", "https://www.linkedin.com/in/chenhao-xue-68b93a1a3/")
+    ]
+    
+    return Section(
+        Div(
+            H2("Our Team"),
+            P("Meet the experts driving innovation at Predictive Labs."),
+            Div(
+                *[Div(
+                    H3(name),
+                    Div(role, cls="role"),
+                    A(
+                        NotStr(linkedin_svg),
+                        Span("LinkedIn"),
+                        href=linkedin,
+                        target="_blank",
+                        cls="linkedin-link"
+                    ),
+                    cls="team-card"
+                ) for name, role, linkedin in team_members],
+                cls="grid grid-4"
+            ),
+            cls="container"
+        ),
+        cls="section",
+        id="team"
+    )
+
 def Contact():
     return Section(
         Div(
@@ -663,6 +749,8 @@ def get():
                 WhyChoose(),
                 Div(cls="divider"),
                 Research(),
+                Div(cls="divider"),
+                Team(),
                 Div(cls="divider"),
                 Contact(),
                 cls="main-content"
