@@ -39,9 +39,9 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        bg: { DEFAULT: '#0A0B0D', elevated: '#13151A', raised: '#191C22' },
-        ink: { DEFAULT: '#F5F5F7', muted: '#9CA3AF', dim: '#6B7280' },
-        line: { DEFAULT: '#1F2937', bright: '#2A3545' },
+        bg: { DEFAULT: '#0A1B4A', elevated: '#132565', raised: '#1B337F' },
+        ink: { DEFAULT: '#F5F5F7', muted: '#B4C0E0', dim: '#8B9AC4' },
+        line: { DEFAULT: '#223665', bright: '#2D4580' },
         accent: { DEFAULT: '#5EEAD4', dim: '#1E3A3A', deep: '#134E4A' },
       },
       fontFamily: {
@@ -68,10 +68,10 @@ def Eyebrow(text, *, href=None):
 def Heading(level, text, *, cls=""):
     tag = {1: H1, 2: H2, 3: H3, 4: H4}[level]
     base = {
-        1: "text-5xl md:text-7xl font-medium tracking-tightest text-ink leading-[1.02]",
-        2: "text-3xl md:text-5xl font-medium tracking-tighter text-ink leading-[1.08]",
-        3: "text-xl md:text-2xl font-medium tracking-tight text-ink",
-        4: "text-lg font-medium text-ink",
+        1: "text-4xl sm:text-5xl md:text-7xl font-medium tracking-tightest text-ink leading-[1.05] md:leading-[1.02]",
+        2: "text-2xl sm:text-3xl md:text-5xl font-medium tracking-tighter text-ink leading-[1.12] md:leading-[1.08]",
+        3: "text-lg sm:text-xl md:text-2xl font-medium tracking-tight text-ink",
+        4: "text-base md:text-lg font-medium text-ink",
     }[level]
     return tag(text, cls=f"{base} {cls}".strip())
 
@@ -132,6 +132,25 @@ def Navbar(current_path: str = "/"):
             cls="relative group",
         )
 
+    # Flatten nav items for the mobile menu
+    def _flat_mobile():
+        out = []
+        for item in NAV_ITEMS:
+            if len(item) == 2:
+                out.append(item)
+            else:
+                label, _, children = item
+                out.append((label, None))  # section label
+                out.extend(children)
+        return out
+
+    mobile_items = [
+        Li(Span(lbl, cls="block text-xs font-mono tracking-widest uppercase text-ink-dim pt-3"))
+        if href is None
+        else Li(A(lbl, href=href, cls=f"block py-2 text-base {'text-accent' if current_path == href else 'text-ink hover:text-accent'}"))
+        for lbl, href in _flat_mobile()
+    ]
+
     return Nav(
         Div(
             A(
@@ -149,15 +168,39 @@ def Navbar(current_path: str = "/"):
                 href="/contact",
                 cls="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium bg-ink text-bg hover:bg-accent transition-colors",
             ),
-            cls="max-w-7xl mx-auto px-6 flex items-center justify-between h-16",
+            Button(
+                Span("☰", id="nav-burger-icon", cls="text-2xl leading-none"),
+                type="button",
+                aria_label="Open menu",
+                onclick=(
+                    "const m=document.getElementById('mobile-nav');"
+                    "const i=document.getElementById('nav-burger-icon');"
+                    "const open=m.classList.toggle('hidden')===false;"
+                    "i.textContent=open?'✕':'☰';"
+                ),
+                cls="lg:hidden text-ink hover:text-accent w-10 h-10 flex items-center justify-center rounded-full border border-line",
+            ),
+            cls="max-w-7xl mx-auto px-5 md:px-6 flex items-center justify-between h-16 gap-4",
         ),
-        cls="sticky top-0 z-50 backdrop-blur-md bg-bg/70 border-b border-line",
+        Div(
+            Ul(*mobile_items, cls="px-5 pb-5 pt-2 space-y-1"),
+            Div(
+                A(
+                    "Talk to us",
+                    href="/contact",
+                    cls="block text-center px-4 py-3 rounded-full text-sm font-medium bg-accent text-bg mx-5 mb-5",
+                ),
+            ),
+            id="mobile-nav",
+            cls="hidden lg:hidden border-t border-line bg-bg-elevated",
+        ),
+        cls="sticky top-0 z-50 backdrop-blur-md bg-bg/80 border-b border-line",
     )
 
 
 def Section_(*content, bleed=False, cls=""):
-    inner_cls = "max-w-7xl mx-auto px-6" if not bleed else "w-full"
-    return Section(Div(*content, cls=inner_cls), cls=f"py-20 md:py-28 {cls}".strip())
+    inner_cls = "max-w-7xl mx-auto px-5 md:px-6" if not bleed else "w-full"
+    return Section(Div(*content, cls=inner_cls), cls=f"py-14 md:py-20 lg:py-28 {cls}".strip())
 
 
 def Footer_():
@@ -217,16 +260,16 @@ def Footer_():
             Div(
                 Div(f"© {__import__('datetime').datetime.now().year} Predictive Labs Ltd.", cls="text-ink-dim text-xs"),
                 Div(
-                    A("GitHub", href=GITHUB_URL, cls="text-ink-dim text-xs hover:text-accent mx-3"),
-                    A("LinkedIn", href=LINKEDIN_URL, cls="text-ink-dim text-xs hover:text-accent mx-3"),
-                    A(CONTACT_EMAIL, href=f"mailto:{CONTACT_EMAIL}", cls="text-ink-dim text-xs hover:text-accent mx-3"),
-                    cls="flex items-center",
+                    A("GitHub", href=GITHUB_URL, cls="text-ink-dim text-xs hover:text-accent mr-4"),
+                    A("LinkedIn", href=LINKEDIN_URL, cls="text-ink-dim text-xs hover:text-accent mr-4"),
+                    A(CONTACT_EMAIL, href=f"mailto:{CONTACT_EMAIL}", cls="text-ink-dim text-xs hover:text-accent break-all"),
+                    cls="flex items-center flex-wrap gap-y-2",
                 ),
-                cls="mt-14 pt-6 border-t border-line flex items-center justify-between flex-wrap gap-4",
+                cls="mt-10 md:mt-14 pt-6 border-t border-line flex items-start md:items-center justify-between flex-wrap gap-4",
             ),
-            cls="max-w-7xl mx-auto px-6",
+            cls="max-w-7xl mx-auto px-5 md:px-6",
         ),
-        cls="py-16 border-t border-line bg-bg-elevated",
+        cls="py-12 md:py-16 border-t border-line bg-bg-elevated",
     )
 
 
@@ -271,7 +314,7 @@ def Hero(*, eyebrow="AI for public outcomes", headline=None, lede=None, ctas=Non
     lede = lede or "Predictive Labs builds AI systems for European public services — in health, defense, public management and mobility — that are auditable by design and open where they can be."
     ctas = ctas or [("See what we build", "/platform", True), ("Talk to us", "/contact", False)]
 
-    height = "min-h-[88vh]" if tall else "min-h-[60vh]"
+    height = "min-h-[82vh] md:min-h-[88vh]" if tall else "min-h-[56vh] md:min-h-[60vh]"
 
     canvas_div = Div(id="three-hero", cls="absolute inset-0 opacity-60 pointer-events-none") if canvas else None
 
@@ -279,13 +322,13 @@ def Hero(*, eyebrow="AI for public outcomes", headline=None, lede=None, ctas=Non
         Div(
             Div(
                 Eyebrow(eyebrow),
-                H1(*headline if isinstance(headline, tuple) else [headline], cls="mt-6 text-5xl md:text-7xl lg:text-[84px] font-medium tracking-tightest text-ink leading-[1.02] max-w-5xl"),
-                P(lede, cls="mt-8 text-lg md:text-xl text-ink-muted max-w-2xl leading-relaxed"),
+                H1(*headline if isinstance(headline, tuple) else [headline], cls="mt-5 md:mt-6 text-[40px] sm:text-5xl md:text-7xl lg:text-[84px] font-medium tracking-tightest text-ink leading-[1.05] md:leading-[1.02] max-w-5xl"),
+                P(lede, cls="mt-6 md:mt-8 text-base md:text-xl text-ink-muted max-w-2xl leading-relaxed"),
                 Div(
                     *[Button_(text, href=href, primary=primary) for text, href, primary in ctas],
-                    cls="mt-10 flex items-center gap-3 flex-wrap",
+                    cls="mt-8 md:mt-10 flex items-center gap-3 flex-wrap",
                 ),
-                cls="relative z-10 max-w-7xl mx-auto px-6",
+                cls="relative z-10 max-w-7xl mx-auto px-5 md:px-6 py-16 md:py-0",
             ),
             canvas_div,
             Div(cls="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg pointer-events-none"),
@@ -293,16 +336,15 @@ def Hero(*, eyebrow="AI for public outcomes", headline=None, lede=None, ctas=Non
         ),
         Div(
             Div(
-                Div("AI for public outcomes", cls="text-xs font-mono tracking-[0.18em] uppercase text-ink-dim"),
+                Div("AI for public outcomes", cls="text-[11px] md:text-xs font-mono tracking-[0.18em] uppercase text-ink-dim"),
                 Div(
-                    Span("Active engagements across ", cls="text-ink-muted text-sm"),
-                    Span("6 ", cls="text-accent text-sm font-mono"),
-                    Span("European public-sector programmes", cls="text-ink-muted text-sm"),
-                    cls="text-sm",
+                    Span("Active engagements across ", cls="text-ink-muted text-xs md:text-sm"),
+                    Span("6 ", cls="text-accent text-xs md:text-sm font-mono"),
+                    Span("European public-sector programmes", cls="text-ink-muted text-xs md:text-sm"),
                 ),
-                cls="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-3",
+                cls="max-w-7xl mx-auto px-5 md:px-6 py-4 md:py-5 flex items-center justify-between flex-wrap gap-3",
             ),
-            cls="border-y border-line bg-bg-elevated/50",
+            cls="border-y border-line bg-bg-elevated/60",
         ),
     )
 
