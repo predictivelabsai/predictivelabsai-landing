@@ -469,6 +469,63 @@ def CaseStudyCard(cs, *, compact=False):
     )
 
 
+def NewsSection(*, category: str, title: str = "From the feed",
+                subtitle: str | None = None, eyebrow: str = "News"):
+    """Render a compact news block. Items are pulled from content/news.py's
+    in-memory cache; if empty (cold start, before the background refresher
+    has populated the cache) the section is hidden entirely so we never
+    show an empty shell."""
+    from content import news as _news
+
+    items = _news.items_for(category)
+    if not items:
+        return Div()  # empty placeholder — hidden via absence of children
+
+    def _item(it):
+        pub = _news.format_published(it.get("published"))
+        meta = [Span(it["source"], cls="text-ink-dim text-xs font-mono")]
+        if pub:
+            meta.append(Span("·", cls="text-ink-dim text-xs mx-2"))
+            meta.append(Span(pub, cls="text-ink-dim text-xs"))
+        return A(
+            Div(
+                H4(it["title"], cls="text-ink text-base md:text-lg font-medium leading-snug mb-3 group-hover:text-accent transition-colors"),
+                Div(*meta, cls="flex items-center flex-wrap"),
+                cls="p-5 md:p-6 h-full rounded-2xl bg-bg-elevated border border-line group-hover:border-accent/60 transition-colors",
+            ),
+            href=it["url"],
+            target="_blank",
+            rel="noopener",
+            cls="block group",
+        )
+
+    last = _news.last_refresh_iso()
+
+    return Section_(
+        Div(
+            Div(
+                Eyebrow(eyebrow),
+                Heading(2, title, cls="mt-4 max-w-3xl"),
+                P(subtitle, cls="mt-4 text-ink-muted max-w-2xl leading-relaxed") if subtitle else None,
+                cls="md:flex-1",
+            ),
+            Div(
+                Span("Refreshed hourly from public RSS + Atom feeds.",
+                     cls="text-ink-dim text-xs"),
+                Span(NotStr("&nbsp;·&nbsp;") + f"Last refresh: {last}" if last else "",
+                     cls="text-ink-dim text-xs"),
+                cls="text-left md:text-right md:max-w-xs mt-4 md:mt-0",
+            ),
+            cls="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4",
+        ),
+        Div(
+            *[_item(it) for it in items],
+            cls="grid md:grid-cols-2 gap-4",
+        ),
+        cls="border-t border-line",
+    )
+
+
 def CTASection(*, headline="Brief us on your programme.", body="We work with public-sector buyers in the UK, the Nordics, the Benelux and the Baltics. Tell us the problem — we'll tell you if we can help.", cta_label="Start the conversation", cta_href="/contact"):
     return Section(
         Div(

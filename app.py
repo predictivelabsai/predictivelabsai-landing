@@ -11,7 +11,7 @@ from fasthtml.common import (
 )
 
 from components import (
-    page, Hero, Pillar, MetricTile, CaseStudyCard, CTASection,
+    page, Hero, Pillar, MetricTile, CaseStudyCard, CTASection, NewsSection,
     Section_, Heading, Eyebrow, Pill, Button_, SectorLink,
     CONTACT_EMAIL, GITHUB_URL, LINKEDIN_URL,
 )
@@ -19,6 +19,11 @@ from content.case_studies import ALL as ALL_CASES, BID_DERIVED, NAMED_PRECEDENTS
 from content.team import TEAM
 from content.repos import REPOS, EXTERNAL_RESEARCH
 from content import signal as signal_mod
+from content import news as news_mod
+
+# Kick off the background RSS refresher once at import time so page renders
+# never block on upstream fetches.
+news_mod.start_background_refresh()
 
 
 app, rt = fast_app(live=False, static_path=".", pico=False)
@@ -130,6 +135,12 @@ def home():
                 cls="flex flex-col md:flex-row gap-10 items-stretch",
             ),
             cls="border-y border-line",
+        ),
+
+        NewsSection(
+            category="home",
+            title="What's moving in AI and European public services.",
+            subtitle="A rolling mix from AI, government, health, defence and financial-services feeds. Refreshed hourly; links open in a new tab.",
         ),
 
         CTASection(),
@@ -305,9 +316,18 @@ SOLUTIONS = {
 }
 
 
+SOLUTION_NEWS = {
+    "defense": ("defense", "Defence and public-security signal.", "Latest from MoD announcements, EU defence procurement and the wider defence-AI conversation."),
+    "healthcare": ("healthcare", "Health and life-sciences signal.", "NHS digital-health coverage, DHSC announcements, and European health-data developments."),
+    "public": ("public", "Public-management and mobility signal.", "UK central and local government digital, procurement and AI deployment news."),
+    "financial": ("financial", "Financial-services signal.", "Financial-services AI, regulation and FinTech deployment across the UK and Europe."),
+}
+
+
 def _solution_page(slug):
     s = SOLUTIONS[slug]
     cases = [c for c in ALL_CASES if c["id"] in s["case_ids"]]
+    news_key, news_title, news_sub = SOLUTION_NEWS[slug]
 
     return page(
         s["title"],
@@ -345,6 +365,7 @@ def _solution_page(slug):
             ),
             cls="border-t border-line bg-bg-elevated/40",
         ),
+        NewsSection(category=news_key, title=news_title, subtitle=news_sub),
         CTASection(),
     )
 
