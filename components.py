@@ -10,6 +10,7 @@ from fasthtml.common import (
     Html, Head, Body, Meta, Title, Link, Script, Style, NotStr,
     Nav, Main, Footer, Header, Section, Article, Aside, Div, Span, A, Img, Svg,
     H1, H2, H3, H4, H5, H6, P, Ul, Ol, Li, Button, Small, Strong, Em, I,
+    Video, Source,
 )
 
 SITE_NAME = "Predictive Labs"
@@ -358,12 +359,27 @@ def Hero(*, eyebrow="AI for public outcomes", headline=None, lede=None, ctas=Non
 
     height = "min-h-[82vh] md:min-h-[88vh]" if tall else "min-h-[56vh] md:min-h-[60vh]"
 
-    canvas_div = Div(id="three-hero", cls="absolute inset-0 opacity-60 pointer-events-none") if canvas else None
+    canvas_div = Div(id="three-hero", cls="absolute inset-0 z-10 opacity-60 pointer-events-none") if canvas else None
+
+    video_div = Video(
+        Source(src="/static/video/hero-bg-720.mp4", type="video/mp4"),
+        autoplay=True,
+        muted=True,
+        loop=True,
+        playsinline=True,
+        preload="metadata",
+        poster="/static/video/hero-bg-poster.jpg",
+        id="hero-video",
+        cls="absolute inset-0 w-full h-full object-cover z-0 opacity-55 pointer-events-none",
+    )
 
     lede_nodes = lede if isinstance(lede, tuple) else (lede,)
 
     return Section(
         Div(
+            video_div,
+            canvas_div,
+            Div(cls="absolute inset-0 z-20 bg-gradient-to-b from-bg/40 via-transparent to-bg pointer-events-none"),
             Div(
                 Eyebrow(eyebrow),
                 H1(*headline if isinstance(headline, tuple) else [headline], cls="mt-5 md:mt-6 text-[40px] sm:text-5xl md:text-7xl lg:text-[84px] font-medium tracking-tightest text-ink leading-[1.05] md:leading-[1.02] max-w-5xl"),
@@ -372,11 +388,9 @@ def Hero(*, eyebrow="AI for public outcomes", headline=None, lede=None, ctas=Non
                     *[Button_(text, href=href, primary=primary) for text, href, primary in ctas],
                     cls="mt-8 md:mt-10 flex items-center gap-3 flex-wrap",
                 ),
-                cls="relative z-10 max-w-7xl mx-auto px-5 md:px-6 py-16 md:py-0",
+                cls="relative z-30 max-w-7xl mx-auto px-5 md:px-6 py-16 md:py-0",
             ),
-            canvas_div,
-            Div(cls="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg pointer-events-none"),
-            cls=f"relative {height} flex items-center overflow-hidden",
+            cls=f"relative {height} flex items-center overflow-hidden bg-bg",
         ),
         Div(
             Div(

@@ -205,6 +205,9 @@ cython_debug/
 .playwright-mcp/
 .sesskey
 
+# Uncompressed video sources — only the compressed /static/video/*.mp4 ships.
+/video/
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
