@@ -39,9 +39,9 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        bg: { DEFAULT: '#0A1B4A', elevated: '#132565', raised: '#1B337F' },
-        ink: { DEFAULT: '#F5F5F7', muted: '#B4C0E0', dim: '#8B9AC4' },
-        line: { DEFAULT: '#223665', bright: '#2D4580' },
+        bg: { DEFAULT: '#0D2A70', elevated: '#163A8C', raised: '#1F4BAC' },
+        ink: { DEFAULT: '#F5F5F7', muted: '#C2CEE8', dim: '#95A5D1' },
+        line: { DEFAULT: '#2B4A8E', bright: '#3A60B2' },
         accent: { DEFAULT: '#5EEAD4', dim: '#1E3A3A', deep: '#134E4A' },
       },
       fontFamily: {
@@ -63,6 +63,41 @@ def Eyebrow(text, *, href=None):
     if href:
         return A(text, href=href, cls=cls + " hover:text-ink transition-colors")
     return Span(text, cls=cls)
+
+
+# Map of sector keywords to canonical destination pages. Used by SectorLink()
+# to keep cross-links consistent across the site.
+SECTOR_HREF = {
+    "health": "/solutions/healthcare",
+    "healthcare": "/solutions/healthcare",
+    "hospital": "/solutions/healthcare",
+    "clinical": "/solutions/healthcare",
+    "defense": "/solutions/defense",
+    "defence": "/solutions/defense",
+    "public management": "/solutions/public",
+    "mobility": "/solutions/public",
+    "municipal": "/solutions/public",
+    "financial": "/solutions/financial",
+    # These don't yet have dedicated solution pages — point to Signal where
+    # we show sector data publicly.
+    "energy": "/signal",
+    "education": "/signal",
+}
+
+
+def SectorLink(label: str, *, sector: str | None = None, cls: str = ""):
+    """Inline prose link. Looks up SECTOR_HREF by sector key (or by label
+    lowercased if sector omitted). Styled as a subtle underline so prose
+    reads naturally but a reader can see it's navigable."""
+    key = (sector or label).lower().strip()
+    href = SECTOR_HREF.get(key)
+    if href is None:
+        return Span(label)
+    return A(
+        label,
+        href=href,
+        cls=f"text-ink underline decoration-accent/50 decoration-1 underline-offset-4 hover:decoration-accent hover:text-accent transition-colors {cls}".strip(),
+    )
 
 
 def Heading(level, text, *, cls=""):
@@ -311,19 +346,28 @@ def page(title: str, current_path: str = "/", *content, head_extra=None, body_ex
 
 def Hero(*, eyebrow="AI for public outcomes", headline=None, lede=None, ctas=None, canvas=True, tall=True):
     headline = headline or (Span("Decisions made "), Span("with evidence,", cls="text-accent"), Span(" at the scale of the public good."))
-    lede = lede or "Predictive Labs builds AI systems for European public services — in health, defense, public management and mobility — that are auditable by design and open where they can be."
+    lede = lede or (
+        "Predictive Labs builds AI systems for European public services — in ",
+        SectorLink("health"), ", ",
+        SectorLink("defense"), ", ",
+        SectorLink("public management"), " and ",
+        SectorLink("mobility"),
+        " — that are auditable by design and open where they can be.",
+    )
     ctas = ctas or [("See what we build", "/platform", True), ("Talk to us", "/contact", False)]
 
     height = "min-h-[82vh] md:min-h-[88vh]" if tall else "min-h-[56vh] md:min-h-[60vh]"
 
     canvas_div = Div(id="three-hero", cls="absolute inset-0 opacity-60 pointer-events-none") if canvas else None
 
+    lede_nodes = lede if isinstance(lede, tuple) else (lede,)
+
     return Section(
         Div(
             Div(
                 Eyebrow(eyebrow),
                 H1(*headline if isinstance(headline, tuple) else [headline], cls="mt-5 md:mt-6 text-[40px] sm:text-5xl md:text-7xl lg:text-[84px] font-medium tracking-tightest text-ink leading-[1.05] md:leading-[1.02] max-w-5xl"),
-                P(lede, cls="mt-6 md:mt-8 text-base md:text-xl text-ink-muted max-w-2xl leading-relaxed"),
+                P(*lede_nodes, cls="mt-6 md:mt-8 text-base md:text-xl text-ink-muted max-w-2xl leading-relaxed"),
                 Div(
                     *[Button_(text, href=href, primary=primary) for text, href, primary in ctas],
                     cls="mt-8 md:mt-10 flex items-center gap-3 flex-wrap",

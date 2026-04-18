@@ -99,7 +99,7 @@ function init() {
   globe.add(new THREE.LineSegments(edges, wireMat));
 
   // Faint filled sphere to occlude back-facing arcs (subtle depth)
-  const fillMat = new THREE.MeshBasicMaterial({ color: 0x0a1b4a, transparent: true, opacity: 0.85 });
+  const fillMat = new THREE.MeshBasicMaterial({ color: 0x0d2a70, transparent: true, opacity: 0.85 });
   globe.add(new THREE.Mesh(sphereGeom, fillMat));
 
   // City dots

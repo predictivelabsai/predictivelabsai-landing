@@ -13,15 +13,15 @@ DATA_DIR = Path(__file__).parent / "data"
 TEMPLATE = {
     "paper_bgcolor": "rgba(0,0,0,0)",
     "plot_bgcolor": "rgba(0,0,0,0)",
-    "font": {"family": "Inter, system-ui, sans-serif", "color": "#B4C0E0", "size": 13},
+    "font": {"family": "Inter, system-ui, sans-serif", "color": "#C2CEE8", "size": 13},
     "margin": {"l": 60, "r": 20, "t": 30, "b": 60},
-    "xaxis": {"gridcolor": "#223665", "linecolor": "#223665", "zerolinecolor": "#223665"},
-    "yaxis": {"gridcolor": "#223665", "linecolor": "#223665", "zerolinecolor": "#223665"},
+    "xaxis": {"gridcolor": "#2B4A8E", "linecolor": "#2B4A8E", "zerolinecolor": "#2B4A8E"},
+    "yaxis": {"gridcolor": "#2B4A8E", "linecolor": "#2B4A8E", "zerolinecolor": "#2B4A8E"},
 }
 
 TEAL = "#5EEAD4"
 TEAL_SCALE = [
-    [0.0, "#0A1B4A"],
+    [0.0, "#0D2A70"],
     [0.25, "#134E4A"],
     [0.55, "#0D9488"],
     [0.8, "#2DD4BF"],

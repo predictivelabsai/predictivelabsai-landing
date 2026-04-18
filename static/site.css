@@ -3,7 +3,7 @@
 }
 
 html, body {
-  background: #0A1B4A;
+  background: #0D2A70;
   color: #F5F5F7;
   -webkit-tap-highlight-color: transparent;
 }
@@ -32,26 +32,26 @@ body {
   text-transform: uppercase;
   color: #B4C0E0;
   border-radius: 9999px;
-  border: 1px solid #223665;
+  border: 1px solid #2B4A8E;
   background: transparent;
   transition: all 150ms ease;
   cursor: pointer;
 }
 .signal-tab:hover {
   color: #F5F5F7;
-  border-color: #2D4580;
+  border-color: #3A60B2;
 }
 .signal-tab-active {
-  color: #0A1B4A;
+  color: #0D2A70;
   background: #5EEAD4;
   border-color: #5EEAD4;
 }
 
 /* Plotly chart container */
 .chart-frame {
-  border: 1px solid #223665;
+  border: 1px solid #2B4A8E;
   border-radius: 1rem;
-  background: #132565;
+  background: #163A8C;
   padding: 0.75rem;
   min-height: 360px;
 }
@@ -73,14 +73,14 @@ body {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #0A1B4A; }
-::-webkit-scrollbar-thumb { background: #223665; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #2D4580; }
+::-webkit-scrollbar-track { background: #0D2A70; }
+::-webkit-scrollbar-thumb { background: #2B4A8E; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #3A60B2; }
 
 /* Selection */
 ::selection {
   background: #5EEAD4;
-  color: #0A1B4A;
+  color: #0D2A70;
 }
 
 /* Small-screen polish */

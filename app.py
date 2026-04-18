@@ -12,7 +12,8 @@ from fasthtml.common import (
 
 from components import (
     page, Hero, Pillar, MetricTile, CaseStudyCard, CTASection,
-    Section_, Heading, Eyebrow, Pill, Button_, CONTACT_EMAIL, GITHUB_URL, LINKEDIN_URL,
+    Section_, Heading, Eyebrow, Pill, Button_, SectorLink,
+    CONTACT_EMAIL, GITHUB_URL, LINKEDIN_URL,
 )
 from content.case_studies import ALL as ALL_CASES, BID_DERIVED, NAMED_PRECEDENTS
 from content.team import TEAM
@@ -112,7 +113,13 @@ def home():
                 Div(
                     Eyebrow("Signal"),
                     Heading(2, "We read the data our clients work with — every day.", cls="mt-4 max-w-3xl"),
-                    P("Public-sector delivery starts with the public data. A live view of NHS waiting lists, European defence spend, school attainment gaps, energy mix and AI readiness — the canvases our programmes run against.", cls="mt-5 text-ink-muted text-lg max-w-2xl leading-relaxed"),
+                    P(
+                        "Public-sector delivery starts with the public data. A live view of NHS waiting lists, European ",
+                        SectorLink("defence"), " spend, school ",
+                        SectorLink("attainment", sector="education"), " gaps, ",
+                        SectorLink("energy"), " mix and AI readiness — the canvases our programmes run against.",
+                        cls="mt-5 text-ink-muted text-lg max-w-2xl leading-relaxed",
+                    ),
                     Button_("Open Signal", href="/signal", primary=True, cls="mt-8"),
                     cls="md:w-2/5",
                 ),
@@ -187,8 +194,13 @@ def platform():
         Section_(
             Eyebrow("Platform"),
             Heading(1, "A way of working that behaves like a platform.", cls="mt-5 max-w-5xl"),
-            P("We are a consultancy. We deliver as a team of AI and data engineers, data scientists and domain specialists. What makes us look like a platform is the discipline we bring to every programme: the same pipeline conventions, the same evaluation harness, the same audit posture — whether the brief is a rating model, a hospital-operations dashboard or a municipal traffic signal.",
-              cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed"),
+            P(
+                "We are a consultancy. We deliver as a team of AI and data engineers, data scientists and domain specialists. What makes us look like a platform is the discipline we bring to every programme: the same pipeline conventions, the same evaluation harness, the same audit posture — whether the brief is a ",
+                SectorLink("rating model", sector="financial"), ", a ",
+                SectorLink("hospital-operations dashboard", sector="health"), " or a ",
+                SectorLink("municipal traffic signal", sector="public management"), ".",
+                cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed",
+            ),
             cls="pt-24",
         ),
         Section_(
