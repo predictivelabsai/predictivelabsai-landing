@@ -201,6 +201,10 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+# Claude Code / Playwright MCP artefacts
+.playwright-mcp/
+.sesskey
+
 # Marimo
 marimo/_static/
 marimo/_lsp/

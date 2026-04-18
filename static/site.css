@@ -1,0 +1,83 @@
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  background: #0A0B0D;
+  color: #F5F5F7;
+}
+
+/* Three.js hero canvas container */
+#three-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+#three-hero canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Signal tabs */
+.signal-tab {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9CA3AF;
+  border-radius: 9999px;
+  border: 1px solid #1F2937;
+  background: transparent;
+  transition: all 150ms ease;
+  cursor: pointer;
+}
+.signal-tab:hover {
+  color: #F5F5F7;
+  border-color: #2A3545;
+}
+.signal-tab-active {
+  color: #0A0B0D;
+  background: #5EEAD4;
+  border-color: #5EEAD4;
+}
+
+/* Plotly chart container */
+.chart-frame {
+  border: 1px solid #1F2937;
+  border-radius: 1rem;
+  background: #13151A;
+  padding: 0.75rem;
+  min-height: 360px;
+}
+.chart-frame .plotly-graph-div {
+  width: 100% !important;
+  min-height: 340px;
+}
+
+/* Scroll reveal */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 600ms ease, transform 600ms ease;
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0A0B0D; }
+::-webkit-scrollbar-thumb { background: #1F2937; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #2A3545; }
+
+/* Selection */
+::selection {
+  background: #5EEAD4;
+  color: #0A0B0D;
+}
+
+/* Reduce flash of unstyled Tailwind CDN load */
+body { min-height: 100vh; }
