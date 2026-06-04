@@ -652,6 +652,15 @@ def contact():
                 ),
                 Div(
                     Div(
+                        H3("Estonian entity", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
+                        P("Manmouna OÜ", cls="text-ink"),
+                        P("Teelise tn 10, Nõmme linnaosa", cls="text-ink-muted"),
+                        P("Tallinn, 10916", cls="text-ink-muted"),
+                        P("Estonia", cls="text-ink-muted"),
+                        P("Registry code 16289310", cls="text-ink-dim text-sm mt-3 font-mono"),
+                        cls="mb-10",
+                    ),
+                    Div(
                         H3("Registered office", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
                         P("Predictive Labs Ltd", cls="text-ink"),
                         P("155 Minories Street, Suite 275", cls="text-ink-muted"),
