@@ -298,7 +298,7 @@ def Footer_():
                 cls="grid grid-cols-2 md:grid-cols-4 gap-10",
             ),
             Div(
-                Div(f"© {__import__('datetime').datetime.now().year} Manmouna OÜ t/a Predictive Labs.", cls="text-ink-dim text-xs"),
+                Div(f"© {__import__('datetime').datetime.now().year} Predictive Labs Ltd.", cls="text-ink-dim text-xs"),
                 Div(
                     A("GitHub", href=GITHUB_URL, cls="text-ink-dim text-xs hover:text-accent mr-4"),
                     A("LinkedIn", href=LINKEDIN_URL, cls="text-ink-dim text-xs hover:text-accent mr-4"),
