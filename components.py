@@ -284,8 +284,13 @@ def Footer_():
                     ),
                     P(SITE_TAGLINE, cls="text-ink-muted text-sm max-w-xs mb-5 leading-relaxed"),
                     P(
-                        "Manmouna OÜ · Registry code 16289310", NotStr("<br>"),
-                        "Teelise tn 10, Tallinn, 10916, Estonia",
+                        "UK: Predictive Labs Ltd · Co. 14857334", NotStr("<br>"),
+                        "155 Minories Street, Suite 275, London EC3N 1AD",
+                        cls="text-ink-dim text-xs leading-relaxed mb-2",
+                    ),
+                    P(
+                        "Estonia: Manmouna OÜ · Registry code 16289310", NotStr("<br>"),
+                        "Teelise tn 10, Tallinn, 10916",
                         cls="text-ink-dim text-xs leading-relaxed",
                     ),
                 ),
