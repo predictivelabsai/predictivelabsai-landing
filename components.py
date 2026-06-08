@@ -13,27 +13,31 @@ from fasthtml.common import (
     Video, Source,
 )
 
+from utils.i18n import t, LANGUAGES, DEFAULT_LANG
+
 SITE_NAME = "Predictive Labs"
 SITE_TAGLINE = "AI for public outcomes."
 CONTACT_EMAIL = "info@predictivelabs.ai"
 GITHUB_URL = "https://github.com/predictivelabsai"
 LINKEDIN_URL = "https://www.linkedin.com/company/predictive-labs-ltd/"
 
-NAV_ITEMS = [
-    ("Platform", "/platform"),
-    ("Solutions", None, [
-        ("Defense & public security", "/solutions/defense"),
-        ("Health & life sciences", "/solutions/healthcare"),
-        ("Public management & mobility", "/solutions/public"),
-        ("Financial services", "/solutions/financial"),
-    ]),
-    ("Case studies", "/case-studies"),
-    ("Signal", "/signal"),
-    ("Research", "/research"),
-    ("Thesis", "/thesis"),
-    ("Team", "/team"),
-    ("Contact", "/contact"),
-]
+
+def _nav_items(lang: str = "en"):
+    return [
+        (t("nav_platform", lang), "/platform"),
+        (t("nav_solutions", lang), None, [
+            (t("nav_sol_defense", lang), "/solutions/defense"),
+            (t("nav_sol_health", lang), "/solutions/healthcare"),
+            (t("nav_sol_public", lang), "/solutions/public"),
+            (t("nav_sol_financial", lang), "/solutions/financial"),
+        ]),
+        (t("nav_case_studies", lang), "/case-studies"),
+        (t("nav_signal", lang), "/signal"),
+        (t("nav_research", lang), "/research"),
+        (t("nav_thesis", lang), "/thesis"),
+        (t("nav_team", lang), "/team"),
+        (t("nav_contact", lang), "/contact"),
+    ]
 
 
 TAILWIND_CONFIG = """
@@ -134,7 +138,35 @@ def Pill(text, *, cls=""):
     )
 
 
-def Navbar(current_path: str = "/"):
+def _lang_dropdown(lang: str = "en"):
+    current = LANGUAGES.get(lang, LANGUAGES["en"])
+    options = [
+        Button(
+            Span(info["flag"], cls="text-base"),
+            Span(info["native"], cls="text-xs"),
+            cls=f"flex items-center gap-2 px-2.5 py-1.5 rounded-md text-left cursor-pointer border-0 bg-transparent text-ink-muted hover:bg-bg-raised hover:text-ink transition-colors whitespace-nowrap{' text-accent font-semibold' if code == lang else ''}",
+            onclick=f"fetch('/lang',{{method:'POST',headers:{{'Content-Type':'application/x-www-form-urlencoded'}},body:'lang={code}'}}).then(()=>location.reload())",
+        )
+        for code, info in LANGUAGES.items()
+    ]
+    return Div(
+        Button(
+            current["flag"],
+            cls="text-lg leading-none px-1.5 py-1 rounded-md border border-transparent hover:border-line-bright cursor-pointer bg-transparent transition-colors",
+            onclick="event.stopPropagation();document.getElementById('lang-dd-menu').classList.toggle('hidden')",
+        ),
+        Div(
+            *options,
+            id="lang-dd-menu",
+            cls="hidden absolute right-0 top-full mt-1 flex-col bg-bg-elevated border border-line rounded-xl shadow-2xl z-[100] min-w-[150px] p-1.5 max-h-[300px] overflow-y-auto",
+        ),
+        cls="relative",
+    )
+
+
+def Navbar(current_path: str = "/", lang: str = "en"):
+    items = _nav_items(lang)
+
     def _nav_item(item):
         if len(item) == 2:
             label, href = item
@@ -169,15 +201,14 @@ def Navbar(current_path: str = "/"):
             cls="relative group",
         )
 
-    # Flatten nav items for the mobile menu
     def _flat_mobile():
         out = []
-        for item in NAV_ITEMS:
+        for item in items:
             if len(item) == 2:
                 out.append(item)
             else:
                 label, _, children = item
-                out.append((label, None))  # section label
+                out.append((label, None))
                 out.extend(children)
         return out
 
@@ -197,13 +228,17 @@ def Navbar(current_path: str = "/"):
                 cls="flex items-center text-ink text-base hover:text-accent transition-colors",
             ),
             Ul(
-                *[_nav_item(i) for i in NAV_ITEMS],
+                *[_nav_item(i) for i in items],
                 cls="hidden lg:flex items-center gap-7",
             ),
-            A(
-                "Talk to us",
-                href="/contact",
-                cls="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium bg-ink text-bg hover:bg-accent transition-colors",
+            Div(
+                _lang_dropdown(lang),
+                A(
+                    t("nav_talk_to_us", lang),
+                    href="/contact",
+                    cls="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium bg-ink text-bg hover:bg-accent transition-colors",
+                ),
+                cls="flex items-center gap-3",
             ),
             Button(
                 Span("☰", id="nav-burger-icon", cls="text-2xl leading-none"),
@@ -223,7 +258,7 @@ def Navbar(current_path: str = "/"):
             Ul(*mobile_items, cls="px-5 pb-5 pt-2 space-y-1"),
             Div(
                 A(
-                    "Talk to us",
+                    t("nav_talk_to_us", lang),
                     href="/contact",
                     cls="block text-center px-4 py-3 rounded-full text-sm font-medium bg-accent text-bg mx-5 mb-5",
                 ),
@@ -231,6 +266,7 @@ def Navbar(current_path: str = "/"):
             id="mobile-nav",
             cls="hidden lg:hidden border-t border-line bg-bg-elevated",
         ),
+        Script(NotStr("document.addEventListener('click',function(e){var m=document.getElementById('lang-dd-menu');if(m&&!m.parentElement.contains(e.target))m.classList.add('hidden')})")),
         cls="sticky top-0 z-50 backdrop-blur-md bg-bg/80 border-b border-line",
     )
 
@@ -240,24 +276,24 @@ def Section_(*content, bleed=False, cls=""):
     return Section(Div(*content, cls=inner_cls), cls=f"py-14 md:py-20 lg:py-28 {cls}".strip())
 
 
-def Footer_():
+def Footer_(lang: str = "en"):
     columns = [
-        ("Platform", [
-            ("Overview", "/platform"),
-            ("Case studies", "/case-studies"),
-            ("Signal", "/signal"),
-            ("Research", "/research"),
+        (t("footer_platform", lang), [
+            (t("footer_overview", lang), "/platform"),
+            (t("nav_case_studies", lang), "/case-studies"),
+            (t("nav_signal", lang), "/signal"),
+            (t("nav_research", lang), "/research"),
         ]),
-        ("Solutions", [
-            ("Defense & public security", "/solutions/defense"),
-            ("Health & life sciences", "/solutions/healthcare"),
-            ("Public management & mobility", "/solutions/public"),
-            ("Financial services", "/solutions/financial"),
+        (t("footer_solutions", lang), [
+            (t("nav_sol_defense", lang), "/solutions/defense"),
+            (t("nav_sol_health", lang), "/solutions/healthcare"),
+            (t("nav_sol_public", lang), "/solutions/public"),
+            (t("nav_sol_financial", lang), "/solutions/financial"),
         ]),
-        ("Company", [
-            ("Team", "/team"),
-            ("Thesis", "/thesis"),
-            ("Contact", "/contact"),
+        (t("footer_company", lang), [
+            (t("nav_team", lang), "/team"),
+            (t("nav_thesis", lang), "/thesis"),
+            (t("nav_contact", lang), "/contact"),
             ("GitHub", GITHUB_URL),
             ("LinkedIn", LINKEDIN_URL),
         ]),
@@ -326,7 +362,7 @@ def Footer_():
     )
 
 
-def page(title: str, current_path: str = "/", *content, head_extra=None, body_extra=None):
+def page(title: str, current_path: str = "/", *content, head_extra=None, body_extra=None, lang: str = "en"):
     head_children = [
         Meta(charset="utf-8"),
         Meta(name="viewport", content="width=device-width, initial-scale=1"),
@@ -346,9 +382,9 @@ def page(title: str, current_path: str = "/", *content, head_extra=None, body_ex
         head_children.extend(head_extra if isinstance(head_extra, list) else [head_extra])
 
     body_children = [
-        Navbar(current_path),
+        Navbar(current_path, lang=lang),
         Main(*content, cls="min-h-screen"),
-        Footer_(),
+        Footer_(lang=lang),
     ]
     if body_extra:
         body_children.extend(body_extra if isinstance(body_extra, list) else [body_extra])
@@ -356,7 +392,7 @@ def page(title: str, current_path: str = "/", *content, head_extra=None, body_ex
     return Html(
         Head(*head_children),
         Body(*body_children, cls="bg-bg text-ink font-sans antialiased"),
-        lang="en",
+        lang=lang,
     )
 
 
@@ -543,16 +579,19 @@ def NewsSection(*, category: str, title: str = "From the feed",
     )
 
 
-def CTASection(*, headline="Brief us on your programme.", body="We work with public-sector buyers in the UK, the Nordics, the Benelux and the Baltics. Tell us the problem — we'll tell you if we can help.", cta_label="Start the conversation", cta_href="/contact"):
+def CTASection(*, headline=None, body=None, cta_label=None, cta_href="/contact", lang="en"):
+    headline = headline or t("cta_headline", lang)
+    body = body or t("cta_body", lang)
+    cta_label = cta_label or t("cta_start", lang)
     return Section(
         Div(
             Div(
-                Eyebrow("Engage"),
+                Eyebrow(t("cta_engage", lang)),
                 Heading(2, headline, cls="mt-4 max-w-3xl"),
                 P(body, cls="mt-5 text-ink-muted text-lg max-w-2xl leading-relaxed"),
                 Div(
                     Button_(cta_label, href=cta_href, primary=True),
-                    Button_("See case studies", href="/case-studies", primary=False),
+                    Button_(t("cta_see_cases", lang), href="/case-studies", primary=False),
                     cls="mt-8 flex items-center gap-3 flex-wrap",
                 ),
                 cls="max-w-7xl mx-auto px-6 py-20 md:py-28 relative z-10",

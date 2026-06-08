@@ -5,6 +5,9 @@ Dark, palantir-inspired, public-sector first. Content lives in content/*.py;
 routes are thin composition layers over components.py primitives.
 """
 
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+
 from fasthtml.common import (
     fast_app, serve, Div, Span, A, P, Ul, Li, Section, Article, Header,
     NotStr, Script, Style, H1, H2, H3, Button,
@@ -20,19 +23,34 @@ from content.team import TEAM
 from content.repos import REPOS, EXTERNAL_RESEARCH
 from content import signal as signal_mod
 from content import news as news_mod
+from utils.i18n import t, get_lang, set_lang
 
 # Kick off the background RSS refresher once at import time so page renders
 # never block on upstream fetches.
 news_mod.start_background_refresh()
 
 
-app, rt = fast_app(live=False, static_path=".", pico=False)
+app, rt = fast_app(live=False, static_path=".", pico=False, secret_key="plai-landing-sess-2026")
+
+
+def _lang(request: Request) -> str:
+    return get_lang(request.session, request)
+
+
+@rt("/lang", methods=["POST"])
+async def lang_switch(request: Request):
+    form = await request.form()
+    code = (form.get("lang") or "").strip()
+    if code:
+        set_lang(request.session, code)
+    return JSONResponse({"ok": True})
 
 
 # ---------- /  Home ----------
 
 @rt("/")
-def home():
+def home(request: Request):
+    lang = _lang(request)
     pillars = [
         ("01", "Document intelligence", "Extraction and retrieval over regulatory filings, clinical protocols, tender packs and legal corpora — with auditable citation trails."),
         ("02", "Applied forecasting", "Demand, revenue and operational forecasting that fuses internal records with open data, satellite and alternative signals."),
@@ -45,18 +63,21 @@ def home():
         "Nando's", "Indurent (Blackstone)",
     ]
 
-    # Pick 3 case studies for the home strip — one public-sector, one Nordic health, one enterprise
     home_cases = [c for c in ALL_CASES if c["id"] in ("uk-traffic-od", "nordic-health-rwd", "microsoft-isd")]
 
     return page(
-        "AI for public outcomes",
+        t("home_eyebrow", lang),
         "/",
-        Hero(),
+        Hero(
+            eyebrow=t("home_eyebrow", lang),
+            headline=(Span(t("home_headline_1", lang)), Span(t("home_headline_2", lang), cls="text-accent"), Span(t("home_headline_3", lang))),
+            lede=t("home_lede", lang),
+            ctas=[(t("home_cta_see", lang), "/platform", True), (t("nav_talk_to_us", lang), "/contact", False)],
+        ),
 
-        # Logo / precedent bar
         Section_(
-            Eyebrow("Precedent"),
-            Heading(2, "Delivered inside institutions that take correctness seriously.", cls="mt-4 max-w-3xl"),
+            Eyebrow(t("home_precedent", lang)),
+            Heading(2, t("home_precedent_heading", lang), cls="mt-4 max-w-3xl"),
             Div(
                 *[Div(name, cls="text-ink-muted text-sm md:text-base font-medium border border-line rounded-full px-4 py-2") for name in logos_row],
                 cls="mt-10 flex flex-wrap gap-3",
@@ -64,25 +85,23 @@ def home():
             cls="border-b border-line",
         ),
 
-        # Capability pillars
         Section_(
             Div(
-                Eyebrow("Capabilities"),
-                Heading(2, "Four capabilities, composed to fit the programme.", cls="mt-4 max-w-4xl"),
-                P("We don't ship a platform. We ship a team that brings a platform's discipline to every engagement — reproducible pipelines, versioned models, inspectable prompts, open code where the law and the contract allow.", cls="mt-5 text-ink-muted text-lg max-w-3xl"),
+                Eyebrow(t("home_capabilities", lang)),
+                Heading(2, t("home_cap_heading", lang), cls="mt-4 max-w-4xl"),
+                P(t("home_cap_body", lang), cls="mt-5 text-ink-muted text-lg max-w-3xl"),
                 cls="mb-14",
             ),
             Div(
-                *[Pillar(n, t, b) for n, t, b in pillars],
+                *[Pillar(n, title, body) for n, title, body in pillars],
                 cls="grid md:grid-cols-2 lg:grid-cols-4 gap-5",
             ),
         ),
 
-        # Sector focus
         Section_(
             Div(
-                Eyebrow("Where we work"),
-                Heading(2, "Built around four public-sector programmes — and one commercial root.", cls="mt-4 max-w-4xl"),
+                Eyebrow(t("home_where", lang)),
+                Heading(2, t("home_where_heading", lang), cls="mt-4 max-w-4xl"),
                 cls="mb-14",
             ),
             Div(
@@ -95,11 +114,10 @@ def home():
             cls="border-y border-line bg-bg-elevated/40",
         ),
 
-        # Case-study strip
         Section_(
             Div(
-                Eyebrow("Selected work"),
-                Heading(2, "What the programmes look like.", cls="mt-4 max-w-3xl"),
+                Eyebrow(t("home_selected_work", lang)),
+                Heading(2, t("home_selected_heading", lang), cls="mt-4 max-w-3xl"),
                 cls="mb-14 flex flex-col md:flex-row md:items-end md:justify-between gap-4",
             ),
             Div(
@@ -107,17 +125,16 @@ def home():
                 cls="grid md:grid-cols-3 gap-5",
             ),
             Div(
-                Button_("All case studies", href="/case-studies", primary=False),
+                Button_(t("home_all_cases", lang), href="/case-studies", primary=False),
                 cls="mt-10",
             ),
         ),
 
-        # Signal teaser
         Section_(
             Div(
                 Div(
-                    Eyebrow("Signal"),
-                    Heading(2, "We read the data our clients work with — every day.", cls="mt-4 max-w-3xl"),
+                    Eyebrow(t("nav_signal", lang)),
+                    Heading(2, t("home_signal_heading", lang), cls="mt-4 max-w-3xl"),
                     P(
                         "Public-sector delivery starts with the public data. A live view of NHS waiting lists, European ",
                         SectorLink("defence"), " spend, school ",
@@ -125,7 +142,7 @@ def home():
                         SectorLink("energy"), " mix and AI readiness — the canvases our programmes run against.",
                         cls="mt-5 text-ink-muted text-lg max-w-2xl leading-relaxed",
                     ),
-                    Button_("Open Signal", href="/signal", primary=True, cls="mt-8"),
+                    Button_(t("home_open_signal", lang), href="/signal", primary=True, cls="mt-8"),
                     cls="md:w-2/5",
                 ),
                 Div(
@@ -139,13 +156,14 @@ def home():
 
         NewsSection(
             category="home",
-            title="What's moving in AI and European public services.",
-            subtitle="A rolling mix from AI, government, health, defence and financial-services feeds. Refreshed hourly; links open in a new tab.",
+            title=t("home_news_title", lang),
+            subtitle=t("home_news_subtitle", lang),
         ),
 
-        CTASection(),
+        CTASection(lang=lang),
 
         # Load Plotly only when signal teaser present (home page only)
+        lang=lang,
         body_extra=[
             Script(src="https://cdn.plot.ly/plotly-2.35.2.min.js"),
             Script(NotStr(f"window.PLOTLY_TEASER = {_teaser_json()};")),
@@ -184,7 +202,8 @@ def _teaser_json():
 # ---------- /platform ----------
 
 @rt("/platform")
-def platform():
+def platform(request: Request):
+    lang = _lang(request)
     pillars = [
         ("01", "Document intelligence", "We build ingest-and-reason pipelines over the documents your mission actually runs on — statutes, protocols, ITT packs, rating manuals. Every extraction is citation-anchored and every answer is reproducible from the source."),
         ("02", "Applied forecasting", "From elective-surgery demand to public-sector revenue, we fuse authoritative internal records with open, alternative and satellite data. Models are versioned, backtested and delivered with the evaluation harness that keeps them honest."),
@@ -238,7 +257,8 @@ def platform():
             ),
             cls="border-t border-line bg-bg-elevated/40",
         ),
-        CTASection(),
+        CTASection(lang=lang),
+        lang=lang,
         body_extra=[Script(src="/static/three-hero.js", type="module")],
     )
 
@@ -324,7 +344,8 @@ SOLUTION_NEWS = {
 }
 
 
-def _solution_page(slug):
+def _solution_page(slug, request: Request):
+    lang = _lang(request)
     s = SOLUTIONS[slug]
     cases = [c for c in ALL_CASES if c["id"] in s["case_ids"]]
     news_key, news_title, news_sub = SOLUTION_NEWS[slug]
@@ -366,36 +387,38 @@ def _solution_page(slug):
             cls="border-t border-line bg-bg-elevated/40",
         ),
         NewsSection(category=news_key, title=news_title, subtitle=news_sub),
-        CTASection(),
+        CTASection(lang=lang),
+        lang=lang,
     )
 
 
 @rt("/solutions/defense")
-def sol_defense():
-    return _solution_page("defense")
+def sol_defense(request: Request):
+    return _solution_page("defense", request)
 
 
 @rt("/solutions/healthcare")
-def sol_health():
-    return _solution_page("healthcare")
+def sol_health(request: Request):
+    return _solution_page("healthcare", request)
 
 
 @rt("/solutions/public")
-def sol_public():
-    return _solution_page("public")
+def sol_public(request: Request):
+    return _solution_page("public", request)
 
 
 @rt("/solutions/financial")
-def sol_financial():
-    return _solution_page("financial")
+def sol_financial(request: Request):
+    return _solution_page("financial", request)
 
 
 # ---------- /case-studies ----------
 
 @rt("/case-studies")
-def case_studies():
+def case_studies(request: Request):
+    lang = _lang(request)
     return page(
-        "Case studies",
+        t("nav_case_studies", lang),
         "/case-studies",
         Section_(
             Eyebrow("Case studies"),
@@ -427,14 +450,16 @@ def case_studies():
             ),
             cls="border-t border-line bg-bg-elevated/40",
         ),
-        CTASection(),
+        CTASection(lang=lang),
+        lang=lang,
     )
 
 
 # ---------- /signal ----------
 
 @rt("/signal")
-def signal():
+def signal(request: Request):
+    lang = _lang(request)
     charts = signal_mod.all_charts()
     tabs = []
     panels = []
@@ -494,7 +519,9 @@ def signal():
         CTASection(
             headline="Want this on your data?",
             body="Signal is a public view. Our client engagements operate the same primitives over proprietary and regulated data — with the governance, access control and evaluation harness that regulated work requires.",
+            lang=lang,
         ),
+        lang=lang,
         body_extra=[
             Script(src="https://cdn.plot.ly/plotly-2.35.2.min.js"),
             Script(NotStr(f"window.PLOTLY_DATA = {signal_mod.as_json()};")),
@@ -506,7 +533,8 @@ def signal():
 # ---------- /research ----------
 
 @rt("/research")
-def research():
+def research(request: Request):
+    lang = _lang(request)
     return page(
         "Research",
         "/research",
@@ -573,14 +601,16 @@ def research():
             ),
             cls="border-t border-line bg-bg-elevated/40",
         ),
-        CTASection(),
+        CTASection(lang=lang),
+        lang=lang,
     )
 
 
 # ---------- /team ----------
 
 @rt("/team")
-def team():
+def team(request: Request):
+    lang = _lang(request)
     return page(
         "Team",
         "/team",
@@ -597,7 +627,8 @@ def team():
                 cls="grid md:grid-cols-2 gap-5",
             ),
         ),
-        CTASection(headline="Looking to join us?", body="We work with hand-picked partners and occasional specialist contractors. If your background fits the capabilities on this site, tell us.", cta_label="Write to us"),
+        CTASection(headline="Looking to join us?", body="We work with hand-picked partners and occasional specialist contractors. If your background fits the capabilities on this site, tell us.", cta_label="Write to us", lang=lang),
+        lang=lang,
     )
 
 
@@ -626,45 +657,36 @@ def _member_card(m):
 # ---------- /thesis ----------
 
 @rt("/thesis")
-def thesis():
+def thesis(request: Request):
+    lang = _lang(request)
     proposals = [
-        ("Scale the Open Internet Stack",
-         "A catalogue of EU-aligned open source solutions for cloud, workplace tools, secure email, and decentralised social media."),
-        ("Prioritise public funding for open source",
-         "Development funding in semiconductors, operating systems, cloud/edge, AI, cybersecurity, and future internet architectures."),
-        ("Open Source Maintenance Instrument",
-         "Critical dependency mapping and a dedicated instrument to ensure long-term security and sustainability of key components."),
-        ("Open source in procurement",
-         "New guidelines, fair assessment of open bids, and stronger OSPOs (Open Source Programme Offices) in public administrations."),
-        ("Embed in major EU initiatives",
-         "Open source at the heart of the EUDI Wallet, European Business Wallet, and Digital Commons EDIC."),
-        ("Support the ecosystem",
-         "Startups, skills development (including via Erasmus+), stewardship models, and international promotion of EU open source solutions."),
+        (t("thesis_p1_title", lang), t("thesis_p1_body", lang)),
+        (t("thesis_p2_title", lang), t("thesis_p2_body", lang)),
+        (t("thesis_p3_title", lang), t("thesis_p3_body", lang)),
+        (t("thesis_p4_title", lang), t("thesis_p4_body", lang)),
+        (t("thesis_p5_title", lang), t("thesis_p5_body", lang)),
+        (t("thesis_p6_title", lang), t("thesis_p6_body", lang)),
     ]
 
     return page(
-        "Thesis",
+        t("thesis_eyebrow", lang),
         "/thesis",
         Section_(
-            Eyebrow("Thesis"),
-            Heading(1, "EU Open Source Strategy: key proposals for tech sovereignty.", cls="mt-5 max-w-5xl"),
-            P(
-                "The European Commission has published its EU Open Source Strategy (June 2026) to reduce dependence on non-EU proprietary tech and strengthen control over critical digital infrastructure. "
-                "The strategy takes a full lifecycle approach — from R&D and procurement to deployment and maintenance — to build a more resilient and competitive European open source ecosystem.",
-                cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed",
-            ),
+            Eyebrow(t("thesis_eyebrow", lang)),
+            Heading(1, t("thesis_headline", lang), cls="mt-5 max-w-5xl"),
+            P(t("thesis_lede", lang), cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed"),
             Div(
-                Pill("Tech sovereignty"),
-                Pill("Open source"),
-                Pill("EU policy"),
+                Pill(t("thesis_pill_sovereignty", lang)),
+                Pill(t("thesis_pill_opensource", lang)),
+                Pill(t("thesis_pill_policy", lang)),
                 cls="mt-8 flex flex-wrap gap-2",
             ),
             cls="pt-24",
         ),
         Section_(
             Div(
-                Eyebrow("Key proposals"),
-                Heading(2, "Six pillars of the strategy.", cls="mt-4"),
+                Eyebrow(t("thesis_proposals_eyebrow", lang)),
+                Heading(2, t("thesis_proposals_heading", lang), cls="mt-4"),
                 cls="mb-14",
             ),
             Div(
@@ -682,40 +704,35 @@ def thesis():
         ),
         Section_(
             Div(
-                Eyebrow("Why this matters"),
-                Heading(2, "A practical step toward reducing vendor lock-in and capturing more value in Europe.", cls="mt-4 max-w-4xl"),
+                Eyebrow(t("thesis_why_eyebrow", lang)),
+                Heading(2, t("thesis_why_heading", lang), cls="mt-4 max-w-4xl"),
                 cls="mb-10",
             ),
-            P(
-                "This is not an aspirational white paper — it is a practical framework for reducing vendor lock-in across European public infrastructure. "
-                "By linking procurement, R&D funding, maintenance and deployment into a single strategy, the Commission is building the conditions for a self-sustaining open source ecosystem that Europe controls.",
-                cls="text-ink-muted text-lg max-w-3xl leading-relaxed mb-8",
-            ),
-            P(
-                "At Predictive Labs, we have operated on this thesis from day one: commoditised capability belongs in the commons, client-specific work stays private, "
-                "and every pipeline should be auditable by design. The EU Open Source Strategy validates that approach at continental scale.",
-                cls="text-ink-muted text-lg max-w-3xl leading-relaxed mb-10",
-            ),
+            P(t("thesis_why_body1", lang), cls="text-ink-muted text-lg max-w-3xl leading-relaxed mb-8"),
+            P(t("thesis_why_body2", lang), cls="text-ink-muted text-lg max-w-3xl leading-relaxed mb-10"),
             Div(
-                Button_("Read more", href="https://digital-strategy.ec.europa.eu/en/policies/open-source-strategy", primary=True),
-                Button_("See our open source work", href="/research", primary=False),
+                Button_(t("thesis_read_more", lang), href="https://digital-strategy.ec.europa.eu/en/policies/open-source-strategy", primary=True),
+                Button_(t("thesis_see_research", lang), href="/research", primary=False),
                 cls="flex items-center gap-3 flex-wrap",
             ),
             cls="border-t border-line bg-bg-elevated/40",
         ),
         CTASection(
-            headline="Building on open source for European public services?",
-            body="We build AI systems on open, auditable stacks for European public-sector programmes. If your brief aligns with this thesis, talk to us.",
+            headline=t("thesis_cta_headline", lang),
+            body=t("thesis_cta_body", lang),
+            lang=lang,
         ),
+        lang=lang,
     )
 
 
 # ---------- /contact ----------
 
 @rt("/contact")
-def contact():
+def contact(request: Request):
+    lang = _lang(request)
     return page(
-        "Contact",
+        t("nav_contact", lang),
         "/contact",
         Section_(
             Eyebrow("Contact"),
@@ -775,6 +792,7 @@ def contact():
                 cls="grid md:grid-cols-2 gap-5",
             ),
         ),
+        lang=lang,
     )
 
 

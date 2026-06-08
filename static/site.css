@@ -71,11 +71,9 @@ body {
   transform: none;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #0D2A70; }
-::-webkit-scrollbar-thumb { background: #2B4A8E; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #3A60B2; }
+/* Hide scrollbar but keep scrolling */
+html { scrollbar-width: none; }
+html::-webkit-scrollbar { display: none; }
 
 /* Selection */
 ::selection {
@@ -88,6 +86,33 @@ body {
   .chart-frame { min-height: 300px; padding: 0.5rem; }
   .chart-frame .plotly-graph-div { min-height: 280px; }
 }
+
+/* Language dropdown */
+.lang-dropdown { position: relative; }
+.lang-trigger {
+    background: none; border: 1px solid transparent; border-radius: .35rem;
+    cursor: pointer; font-size: 1.15rem; line-height: 1; padding: .25rem .4rem;
+    transition: border-color .15s;
+}
+.lang-trigger:hover { border-color: #3A60B2; }
+.lang-dd-menu {
+    position: absolute !important; right: 0; top: calc(100% + 4px);
+    background: #163A8C; border: 1px solid #2B4A8E; border-radius: .6rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,.3); z-index: 100;
+    min-width: 150px; padding: .3rem; max-height: 300px; overflow-y: auto;
+    flex-direction: column;
+}
+.lang-dd-menu:not(.hidden) { display: flex !important; }
+.lang-dd-item {
+    display: flex; align-items: center; gap: .5rem;
+    padding: .4rem .6rem; background: none; border: none; border-radius: .3rem;
+    cursor: pointer; font-size: .78rem; color: #C2CEE8;
+    transition: background .12s, color .12s; white-space: nowrap;
+}
+.lang-dd-item:hover { background: #1F4BAC; color: #F5F5F7; }
+.lang-dd-item.active { color: #5EEAD4; font-weight: 600; }
+.lang-dd-flag { font-size: 1rem; }
+.lang-dd-label { font-family: 'Inter', sans-serif; }
 
 /* Reduce flash of unstyled Tailwind CDN load */
 body { min-height: 100vh; }
