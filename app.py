@@ -623,6 +623,93 @@ def _member_card(m):
     )
 
 
+# ---------- /thesis ----------
+
+@rt("/thesis")
+def thesis():
+    proposals = [
+        ("Scale the Open Internet Stack",
+         "A catalogue of EU-aligned open source solutions for cloud, workplace tools, secure email, and decentralised social media."),
+        ("Prioritise public funding for open source",
+         "Development funding in semiconductors, operating systems, cloud/edge, AI, cybersecurity, and future internet architectures."),
+        ("Open Source Maintenance Instrument",
+         "Critical dependency mapping and a dedicated instrument to ensure long-term security and sustainability of key components."),
+        ("Open source in procurement",
+         "New guidelines, fair assessment of open bids, and stronger OSPOs (Open Source Programme Offices) in public administrations."),
+        ("Embed in major EU initiatives",
+         "Open source at the heart of the EUDI Wallet, European Business Wallet, and Digital Commons EDIC."),
+        ("Support the ecosystem",
+         "Startups, skills development (including via Erasmus+), stewardship models, and international promotion of EU open source solutions."),
+    ]
+
+    return page(
+        "Thesis",
+        "/thesis",
+        Section_(
+            Eyebrow("Thesis"),
+            Heading(1, "EU Open Source Strategy: key proposals for tech sovereignty.", cls="mt-5 max-w-5xl"),
+            P(
+                "The European Commission has published its EU Open Source Strategy (June 2026) to reduce dependence on non-EU proprietary tech and strengthen control over critical digital infrastructure. "
+                "The strategy takes a full lifecycle approach — from R&D and procurement to deployment and maintenance — to build a more resilient and competitive European open source ecosystem.",
+                cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed",
+            ),
+            Div(
+                Pill("Tech sovereignty"),
+                Pill("Open source"),
+                Pill("EU policy"),
+                cls="mt-8 flex flex-wrap gap-2",
+            ),
+            cls="pt-24",
+        ),
+        Section_(
+            Div(
+                Eyebrow("Key proposals"),
+                Heading(2, "Six pillars of the strategy.", cls="mt-4"),
+                cls="mb-14",
+            ),
+            Div(
+                *[Div(
+                    Div(
+                        Span(f"0{i+1}", cls="font-mono text-xs tracking-widest text-accent"),
+                        cls="mb-4",
+                    ),
+                    Heading(3, title, cls="mb-3"),
+                    P(body, cls="text-ink-muted text-sm leading-relaxed"),
+                    cls="p-7 rounded-2xl bg-bg-elevated border border-line",
+                ) for i, (title, body) in enumerate(proposals)],
+                cls="grid md:grid-cols-2 lg:grid-cols-3 gap-5",
+            ),
+        ),
+        Section_(
+            Div(
+                Eyebrow("Why this matters"),
+                Heading(2, "A practical step toward reducing vendor lock-in and capturing more value in Europe.", cls="mt-4 max-w-4xl"),
+                cls="mb-10",
+            ),
+            P(
+                "This is not an aspirational white paper — it is a practical framework for reducing vendor lock-in across European public infrastructure. "
+                "By linking procurement, R&D funding, maintenance and deployment into a single strategy, the Commission is building the conditions for a self-sustaining open source ecosystem that Europe controls.",
+                cls="text-ink-muted text-lg max-w-3xl leading-relaxed mb-8",
+            ),
+            P(
+                "At Predictive Labs, we have operated on this thesis from day one: commoditised capability belongs in the commons, client-specific work stays private, "
+                "and every pipeline should be auditable by design. The EU Open Source Strategy validates that approach at continental scale.",
+                cls="text-ink-muted text-lg max-w-3xl leading-relaxed mb-10",
+            ),
+            Div(
+                Button_("Read the full strategy", href="https://digital-strategy.ec.europa.eu/en/policies/open-source-strategy", primary=True),
+                Button_("See our open source work", href="/research", primary=False),
+                cls="flex items-center gap-3 flex-wrap",
+            ),
+            cls="border-t border-line bg-bg-elevated/40",
+        ),
+        CTASection(
+            headline="Building on open source for European public services?",
+            body="We build AI systems on open, auditable stacks for European public-sector programmes. If your brief aligns with this thesis, talk to us.",
+        ),
+    )
+
+
 # ---------- /contact ----------
 
 @rt("/contact")

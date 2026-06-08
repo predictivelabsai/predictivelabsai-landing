@@ -30,6 +30,7 @@ NAV_ITEMS = [
     ("Case studies", "/case-studies"),
     ("Signal", "/signal"),
     ("Research", "/research"),
+    ("Thesis", "/thesis"),
     ("Team", "/team"),
     ("Contact", "/contact"),
 ]
@@ -255,6 +256,7 @@ def Footer_():
         ]),
         ("Company", [
             ("Team", "/team"),
+            ("Thesis", "/thesis"),
             ("Contact", "/contact"),
             ("GitHub", GITHUB_URL),
             ("LinkedIn", LINKEDIN_URL),
