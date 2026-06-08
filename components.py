@@ -320,7 +320,7 @@ def Footer_(lang: str = "en"):
                         href="/",
                         cls="flex items-center text-lg mb-4",
                     ),
-                    P(SITE_TAGLINE, cls="text-ink-muted text-sm max-w-xs mb-5 leading-relaxed"),
+                    P(t("footer_tagline", lang), cls="text-ink-muted text-sm max-w-xs mb-5 leading-relaxed"),
                     P(
                         "United Kingdom", NotStr("<br>"),
                         "Predictive Labs Ltd", NotStr("<br>"),
@@ -482,36 +482,54 @@ def MetricTile(value, unit, caption, *, cls=""):
     )
 
 
+_COUNTRY_KEY = {
+    "Denmark": "cs_country_denmark", "United Kingdom": "cs_country_united_kingdom",
+    "Finland": "cs_country_finland", "Netherlands": "cs_country_netherlands",
+    "Pan-European": "cs_country_pan_european", "Europe": "cs_country_europe",
+}
+_SECTOR_KEY = {
+    "Health": "cs_sector_health",
+    "Public management · Mobility": "cs_sector_public_mobility",
+    "Public management · Justice": "cs_sector_public_justice",
+    "Public management": "cs_sector_public",
+    "Financial services": "cs_sector_financial",
+    "Cross-sector": "cs_sector_cross",
+}
+
+
 def CaseStudyCard(cs, *, compact=False, lang="en"):
+    cid = cs["id"].replace("-", "_")
     tech = Div(
         *[Pill(tag) for tag in cs.get("tech", [])[:6]],
         cls="flex flex-wrap gap-2 mt-5",
     )
+    country_key = _COUNTRY_KEY.get(cs["country"])
+    sector_key = _SECTOR_KEY.get(cs["sector"])
     return Article(
         Div(
             Span(cs["flag"], cls="text-xl mr-2"),
-            Span(cs["country"], cls="text-xs font-mono tracking-widest text-ink-muted uppercase"),
+            Span(t(country_key, lang) if country_key else cs["country"], cls="text-xs font-mono tracking-widest text-ink-muted uppercase"),
             Span("·", cls="text-ink-dim mx-2"),
-            Span(cs["sector"], cls="text-xs font-mono tracking-widest text-ink-muted uppercase"),
-            Span(cs["status"], cls="ml-auto text-xs font-mono text-accent px-2 py-1 rounded-full border border-accent/40"),
+            Span(t(sector_key, lang) if sector_key else cs["sector"], cls="text-xs font-mono tracking-widest text-ink-muted uppercase"),
+            Span(t(f"cs_{cid}_status", lang), cls="ml-auto text-xs font-mono text-accent px-2 py-1 rounded-full border border-accent/40"),
             cls="flex items-center mb-5",
         ),
-        Heading(3, cs["title"], cls="mb-2"),
-        P(cs["buyer"], cls="text-ink-muted text-sm font-mono mb-5"),
+        Heading(3, t(f"cs_{cid}_title", lang), cls="mb-2"),
+        P(t(f"cs_{cid}_buyer", lang), cls="text-ink-muted text-sm font-mono mb-5"),
         Div(
             Div(
                 Div(t("case_problem", lang), cls="text-[10px] font-mono tracking-widest uppercase text-ink-dim mb-1"),
-                P(cs["problem"], cls="text-ink-muted text-sm leading-relaxed"),
+                P(t(f"cs_{cid}_problem", lang), cls="text-ink-muted text-sm leading-relaxed"),
                 cls="mb-4",
             ),
             Div(
                 Div(t("case_approach", lang), cls="text-[10px] font-mono tracking-widest uppercase text-ink-dim mb-1"),
-                P(cs["approach"], cls="text-ink text-sm leading-relaxed"),
+                P(t(f"cs_{cid}_approach", lang), cls="text-ink text-sm leading-relaxed"),
                 cls="mb-4",
             ),
             Div(
                 Div(t("case_capability", lang), cls="text-[10px] font-mono tracking-widest uppercase text-ink-dim mb-1"),
-                P(cs["capability"], cls="text-ink-muted text-sm leading-relaxed italic"),
+                P(t(f"cs_{cid}_capability", lang), cls="text-ink-muted text-sm leading-relaxed italic"),
             ) if not compact else None,
         ),
         tech if not compact else None,

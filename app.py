@@ -280,12 +280,12 @@ SOLUTIONS = {
         "headline_key": "sol_defense_headline",
         "lede_key": "sol_defense_lede",
         "pillars": [
-            ("Satellite & geospatial intelligence", "From Sentinel-2 imagery pipelines to change-detection and OSINT fusion, delivered through reproducible open-source stacks."),
-            ("Situation pictures", "Fused operational views for municipal and national operators — sensor feeds, anomaly detection, incident summaries."),
-            ("Justice and casework data", "Data-warehouse and dashboarding foundations for probation, regulatory and enforcement agencies, under the strictest access controls."),
+            ("sol_def_pillar1_title", "sol_def_pillar1_body"),
+            ("sol_def_pillar2_title", "sol_def_pillar2_body"),
+            ("sol_def_pillar3_title", "sol_def_pillar3_body"),
         ],
         "case_ids": ["nl-justice-dataplatform", "nordic-city-signal", "uk-traffic-od"],
-        "register": ["Operational confidence", "Auditable decision trail", "Human in authority"],
+        "register": ["sol_reg_operational_confidence", "sol_reg_audit_trail", "sol_reg_human_authority"],
         "news_cat": "defense",
     },
     "healthcare": {
@@ -293,12 +293,12 @@ SOLUTIONS = {
         "headline_key": "sol_health_headline",
         "lede_key": "sol_health_lede",
         "pillars": [
-            ("Real-world data and evidence", "Pipelines over inpatient records, dispensing data and civil registries, with protocol templates that compress follow-up cycles."),
-            ("Hospital operations", "Elective-recovery forecasting, capacity planning and AI application development for the panels Europe's largest hospital systems put on frameworks."),
-            ("Clinical document intelligence", "Extraction and structured summarisation of clinical and regulatory documents, audited against human adjudication."),
+            ("sol_health_pillar1_title", "sol_health_pillar1_body"),
+            ("sol_health_pillar2_title", "sol_health_pillar2_body"),
+            ("sol_health_pillar3_title", "sol_health_pillar3_body"),
         ],
         "case_ids": ["nordic-health-rwd", "nordic-health-panel", "microsoft-isd"],
-        "register": ["GDPR-native", "EU AI Act readiness", "Clinical audit trail"],
+        "register": ["sol_reg_gdpr", "sol_reg_ai_act", "sol_reg_clinical_audit"],
         "news_cat": "healthcare",
     },
     "public": {
@@ -306,12 +306,12 @@ SOLUTIONS = {
         "headline_key": "sol_public_headline",
         "lede_key": "sol_public_lede",
         "pillars": [
-            ("Traffic and origin-destination analytics", "County- and city-scale mobility analytics built on ANPR, Bluetooth and open-data fusion, with methodology published on GitHub."),
-            ("Municipal data foundations", "Data-quality frameworks, dynamic purchasing frameworks and continuous analytics call-offs for municipalities."),
-            ("Planning and forecasting", "Demand, footfall and service-use forecasting for local and regional public-sector planning teams."),
+            ("sol_pub_pillar1_title", "sol_pub_pillar1_body"),
+            ("sol_pub_pillar2_title", "sol_pub_pillar2_body"),
+            ("sol_pub_pillar3_title", "sol_pub_pillar3_body"),
         ],
         "case_ids": ["uk-traffic-od", "nordic-city-signal", "dk-data-quality"],
-        "register": ["Open-source by default", "Reference implementations", "Interoperable"],
+        "register": ["sol_reg_open_source", "sol_reg_reference", "sol_reg_interop"],
         "news_cat": "public",
     },
     "financial": {
@@ -319,12 +319,12 @@ SOLUTIONS = {
         "headline_key": "sol_financial_headline",
         "lede_key": "sol_financial_lede",
         "pillars": [
-            ("Rating and risk models", "Production machine-learning for credit and securitisation ratings, deployed with regulatory auditability."),
-            ("Revenue and demand forecasting", "Time-series modelling for enterprise revenue planning, integrating alternative datasets."),
-            ("Document intelligence at scale", "Extraction, classification and retrieval over prospectuses, filings and rating manuals."),
+            ("sol_fin_pillar1_title", "sol_fin_pillar1_body"),
+            ("sol_fin_pillar2_title", "sol_fin_pillar2_body"),
+            ("sol_fin_pillar3_title", "sol_fin_pillar3_body"),
         ],
         "case_ids": ["dbrs-rmbs", "arm-forecasting", "microsoft-isd"],
-        "register": ["Production ML ops", "Regulatory auditability", "Enterprise scale"],
+        "register": ["sol_reg_prod_ml", "sol_reg_regulatory", "sol_reg_enterprise"],
         "news_cat": "financial",
     },
 }
@@ -343,7 +343,7 @@ def _solution_page(slug, request: Request):
             Heading(1, t(s["headline_key"], lang), cls="mt-5 max-w-5xl"),
             P(t(s["lede_key"], lang), cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed"),
             Div(
-                *[Pill(r) for r in s["register"]],
+                *[Pill(t(r, lang)) for r in s["register"]],
                 cls="mt-10 flex flex-wrap gap-2",
             ),
             cls="pt-24",
@@ -355,7 +355,7 @@ def _solution_page(slug, request: Request):
                 cls="mb-14",
             ),
             Div(
-                *[Pillar(f"0{i+1}", title, body) for i, (title, body) in enumerate(s["pillars"])],
+                *[Pillar(f"0{i+1}", t(title_key, lang), t(body_key, lang)) for i, (title_key, body_key) in enumerate(s["pillars"])],
                 cls="grid md:grid-cols-3 gap-5",
             ),
         ),
@@ -449,9 +449,12 @@ def signal(request: Request):
     tabs = []
     panels = []
     for key, block in charts.items():
+        sig_title = t(f"sig_{key}_title", lang)
+        sig_eyebrow = t(f"sig_{key}_eyebrow", lang)
+        sig_summary = t(f"sig_{key}_summary", lang)
         tabs.append(
             Button(
-                block["title"],
+                sig_title,
                 type="button",
                 cls="signal-tab",
                 **{"data-signal-tab": key},
@@ -460,9 +463,9 @@ def signal(request: Request):
         panels.append(
             Div(
                 Div(
-                    Eyebrow(block["eyebrow"]),
-                    Heading(2, block["title"], cls="mt-4"),
-                    P(block["summary"], cls="mt-5 text-ink-muted text-lg max-w-3xl leading-relaxed"),
+                    Eyebrow(sig_eyebrow),
+                    Heading(2, sig_title, cls="mt-4"),
+                    P(sig_summary, cls="mt-5 text-ink-muted text-lg max-w-3xl leading-relaxed"),
                     cls="mb-10",
                 ),
                 Div(
@@ -477,7 +480,7 @@ def signal(request: Request):
                     cls="grid md:grid-cols-3 gap-5",
                 ),
                 Div(
-                    Span("Source: ", cls="text-ink-dim text-xs"),
+                    Span(t("signal_source", lang), cls="text-ink-dim text-xs"),
                     A(block["source"]["label"], href=block["source"]["url"], target="_blank", cls="text-accent text-xs hover:underline"),
                     cls="mt-4",
                 ),
@@ -608,7 +611,7 @@ def team(request: Request):
         ),
         Section_(
             Div(
-                *[_member_card(m) for m in TEAM],
+                *[_member_card(m, lang=lang) for m in TEAM],
                 cls="grid md:grid-cols-2 gap-5",
             ),
         ),
@@ -617,17 +620,18 @@ def team(request: Request):
     )
 
 
-def _member_card(m):
+def _member_card(m, *, lang="en"):
+    ikey = m["initials"].lower()
     return Article(
         Div(
             Div(m["initials"], cls="w-14 h-14 rounded-full bg-bg-raised border border-line flex items-center justify-center text-ink font-mono text-sm"),
             Div(
                 Heading(3, m["name"], cls="mb-1"),
-                P(m["role"], cls="text-accent text-sm font-mono"),
+                P(t(f"team_{ikey}_role", lang), cls="text-accent text-sm font-mono"),
             ),
             cls="flex items-center gap-4 mb-5",
         ),
-        P(m["bio"], cls="text-ink-muted leading-relaxed mb-6"),
+        P(t(f"team_{ikey}_bio", lang), cls="text-ink-muted leading-relaxed mb-6"),
         A(
             Span("LinkedIn", cls="text-sm"),
             Span("→", cls="text-sm"),
@@ -741,7 +745,7 @@ def contact(request: Request):
                 ),
                 Div(
                     Div(
-                        H3("Registered office", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
+                        H3(t("contact_reg_office", lang), cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
                         P("Predictive Labs Ltd", cls="text-ink"),
                         P("155 Minories Street, Suite 275", cls="text-ink-muted"),
                         P("London, EC3N 1AD", cls="text-ink-muted"),
@@ -750,7 +754,7 @@ def contact(request: Request):
                         cls="mb-10",
                     ),
                     Div(
-                        H3("Lithuanian entity", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
+                        H3(t("contact_lt_entity", lang), cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
                         P("Predictive Labs, UAB", cls="text-ink"),
                         P("Medeinos g. 35-70", cls="text-ink-muted"),
                         P("Vilnius, LT-06137", cls="text-ink-muted"),
@@ -759,7 +763,7 @@ def contact(request: Request):
                         cls="mb-10",
                     ),
                     Div(
-                        H3("Estonian entity", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
+                        H3(t("contact_ee_entity", lang), cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
                         P("Predictive Labs OÜ", cls="text-ink"),
                         P("Karsti 3", cls="text-ink-muted"),
                         P("Tallinn, 11625", cls="text-ink-muted"),
