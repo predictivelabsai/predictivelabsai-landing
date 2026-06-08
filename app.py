@@ -52,10 +52,10 @@ async def lang_switch(request: Request):
 def home(request: Request):
     lang = _lang(request)
     pillars = [
-        ("01", "Document intelligence", "Extraction and retrieval over regulatory filings, clinical protocols, tender packs and legal corpora — with auditable citation trails."),
-        ("02", "Applied forecasting", "Demand, revenue and operational forecasting that fuses internal records with open data, satellite and alternative signals."),
-        ("03", "Geospatial & mobility", "Origin-destination matrices, anomaly detection and situation pictures, built on open data and published as reference implementations."),
-        ("04", "Agentic workflows", "Multi-step LLM agents that run inside your security boundary, instrumented for evaluation and human review."),
+        ("01", t("pillar_doc_intel", lang), t("pillar_doc_intel_body", lang)),
+        ("02", t("pillar_forecasting", lang), t("pillar_forecasting_body", lang)),
+        ("03", t("pillar_geo", lang), t("pillar_geo_body", lang)),
+        ("04", t("pillar_agents", lang), t("pillar_agents_body", lang)),
     ]
 
     logos_row = [
@@ -105,10 +105,10 @@ def home(request: Request):
                 cls="mb-14",
             ),
             Div(
-                _sector_link("Defense & public security", "Decision support inside defence, justice and critical infrastructure — with clear boundaries between AI assistance and human authority.", "/solutions/defense"),
-                _sector_link("Health & life sciences", "Real-world evidence, protocol design and hospital operations — on privacy-preserving, regulatory-grade pipelines.", "/solutions/healthcare"),
-                _sector_link("Public management & mobility", "Traffic, planning and municipal analytics — built on open data and shipped with reference implementations.", "/solutions/public"),
-                _sector_link("Financial services", "Our commercial root — rating, forecasting and document intelligence at enterprise scale. Now ~20% of our work.", "/solutions/financial"),
+                _sector_link(t("sector_defense_title", lang), t("sector_defense_body", lang), "/solutions/defense"),
+                _sector_link(t("sector_health_title", lang), t("sector_health_body", lang), "/solutions/healthcare"),
+                _sector_link(t("sector_public_title", lang), t("sector_public_body", lang), "/solutions/public"),
+                _sector_link(t("sector_financial_title", lang), t("sector_financial_body", lang), "/solutions/financial"),
                 cls="grid md:grid-cols-2 gap-5",
             ),
             cls="border-y border-line bg-bg-elevated/40",
@@ -219,32 +219,28 @@ def platform(request: Request):
     ]
 
     return page(
-        "Platform",
+        t("platform_eyebrow", lang),
         "/platform",
         Section_(
-            Eyebrow("Platform"),
-            Heading(1, "A way of working that behaves like a platform.", cls="mt-5 max-w-5xl"),
-            P(
-                "We are a consultancy. We deliver as a team of AI and data engineers, data scientists and domain specialists. What makes us look like a platform is the discipline we bring to every programme: the same pipeline conventions, the same evaluation harness, the same audit posture — whether the brief is a ",
-                SectorLink("rating model", sector="financial"), ", a ",
-                SectorLink("hospital-operations dashboard", sector="health"), " or a ",
-                SectorLink("municipal traffic signal", sector="public management"), ".",
+            Eyebrow(t("platform_eyebrow", lang)),
+            Heading(1, t("platform_headline", lang), cls="mt-5 max-w-5xl"),
+            P(t("platform_lede", lang),
                 cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed",
             ),
             cls="pt-24",
         ),
         Section_(
             Div(
-                Eyebrow("Capabilities"),
-                Heading(2, "Four composable capabilities.", cls="mt-4"),
+                Eyebrow(t("home_capabilities", lang)),
+                Heading(2, t("platform_cap_heading", lang), cls="mt-4"),
                 cls="mb-14",
             ),
-            Div(*[_platform_row(n, t, b) for n, t, b in pillars], cls="divide-y divide-line border-y border-line"),
+            Div(*[_platform_row(n, title, body) for n, title, body in pillars], cls="divide-y divide-line border-y border-line"),
         ),
         Section_(
             Div(
-                Eyebrow("How we commit"),
-                Heading(2, "Four commitments we write into every contract.", cls="mt-4 max-w-4xl"),
+                Eyebrow(t("platform_commit_eyebrow", lang)),
+                Heading(2, t("platform_commit_heading", lang), cls="mt-4 max-w-4xl"),
                 cls="mb-14",
             ),
             Div(
@@ -365,19 +361,19 @@ def _solution_page(slug, request: Request):
         ),
         Section_(
             Div(
-                Eyebrow("Where we focus"),
-                Heading(2, "Three focal points in this vertical.", cls="mt-4"),
+                Eyebrow(t("sol_where_focus", lang)),
+                Heading(2, t("sol_three_focal", lang), cls="mt-4"),
                 cls="mb-14",
             ),
             Div(
-                *[Pillar(f"0{i+1}", t, b) for i, (t, b) in enumerate(s["pillars"])],
+                *[Pillar(f"0{i+1}", title, body) for i, (title, body) in enumerate(s["pillars"])],
                 cls="grid md:grid-cols-3 gap-5",
             ),
         ),
         Section_(
             Div(
-                Eyebrow("In practice"),
-                Heading(2, "What this looks like on programme.", cls="mt-4 max-w-3xl"),
+                Eyebrow(t("sol_in_practice", lang)),
+                Heading(2, t("sol_looks_like", lang), cls="mt-4 max-w-3xl"),
                 cls="mb-14",
             ),
             Div(
@@ -421,16 +417,16 @@ def case_studies(request: Request):
         t("nav_case_studies", lang),
         "/case-studies",
         Section_(
-            Eyebrow("Case studies"),
-            Heading(1, "Engagements, not endorsements.", cls="mt-5 max-w-4xl"),
-            P("We name the clients we are contractually cleared to name and keep the rest anonymised until they are. Here are six current European public-sector engagements and three commercial precedents that established the practice.",
+            Eyebrow(t("nav_case_studies", lang)),
+            Heading(1, t("cases_headline", lang), cls="mt-5 max-w-4xl"),
+            P(t("cases_lede", lang),
               cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed"),
             cls="pt-24",
         ),
         Section_(
             Div(
-                Eyebrow("Current engagements"),
-                Heading(2, "Public-sector programmes in flight.", cls="mt-4"),
+                Eyebrow(t("cases_current_eyebrow", lang)),
+                Heading(2, t("cases_current_heading", lang), cls="mt-4"),
                 cls="mb-14",
             ),
             Div(
@@ -440,8 +436,8 @@ def case_studies(request: Request):
         ),
         Section_(
             Div(
-                Eyebrow("Named precedents"),
-                Heading(2, "Commercial roots.", cls="mt-4"),
+                Eyebrow(t("cases_named_eyebrow", lang)),
+                Heading(2, t("cases_named_heading", lang), cls="mt-4"),
                 cls="mb-14",
             ),
             Div(
@@ -505,9 +501,9 @@ def signal(request: Request):
         "Signal",
         "/signal",
         Section_(
-            Eyebrow("Signal"),
-            Heading(1, "Public-sector data, visualised with the discipline we bring to programmes.", cls="mt-5 max-w-5xl"),
-            P("Five canvases across the sectors we serve. Every figure is sourced from a named public dataset and cited below its chart. Nothing here is a client artefact.",
+            Eyebrow(t("nav_signal", lang)),
+            Heading(1, t("signal_headline", lang), cls="mt-5 max-w-5xl"),
+            P(t("signal_lede", lang),
               cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed"),
             cls="pt-24",
         ),
@@ -539,16 +535,16 @@ def research(request: Request):
         "Research",
         "/research",
         Section_(
-            Eyebrow("Research & open source"),
-            Heading(1, "Commoditised capability goes to the commons.", cls="mt-5 max-w-4xl"),
-            P("Our reference implementations for public-sector problems live on GitHub. Clients get the specific engagement; the method stays in the community so the next buyer can verify it.",
+            Eyebrow(t("research_eyebrow", lang)),
+            Heading(1, t("research_headline", lang), cls="mt-5 max-w-4xl"),
+            P(t("research_lede", lang),
               cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed"),
             cls="pt-24",
         ),
         Section_(
             Div(
-                Eyebrow("Repositories"),
-                Heading(2, "Open-source toolkits.", cls="mt-4"),
+                Eyebrow(t("research_repos_eyebrow", lang)),
+                Heading(2, t("research_repos_heading", lang), cls="mt-4"),
                 cls="mb-14",
             ),
             Div(
@@ -561,7 +557,7 @@ def research(request: Request):
                                 cls="flex items-center mb-4",
                             ),
                             P(r["tagline"], cls="text-ink-muted text-sm leading-relaxed mb-4"),
-                            Div(*[Pill(t) for t in r["tags"]], cls="flex flex-wrap gap-2"),
+                            Div(*[Pill(tag) for tag in r["tags"]], cls="flex flex-wrap gap-2"),
                             cls="p-6 rounded-2xl bg-bg-elevated border border-line hover:border-accent/50 transition-colors h-full",
                         ),
                         href=r["url"],
@@ -575,8 +571,8 @@ def research(request: Request):
         ),
         Section_(
             Div(
-                Eyebrow("Research platforms"),
-                Heading(2, "Running research on live markets.", cls="mt-4 max-w-3xl"),
+                Eyebrow(t("research_platforms_eyebrow", lang)),
+                Heading(2, t("research_platforms_heading", lang), cls="mt-4 max-w-3xl"),
                 cls="mb-14",
             ),
             Div(
@@ -586,7 +582,7 @@ def research(request: Request):
                             Heading(3, r["name"], cls="mb-3"),
                             P(r["tagline"], cls="text-ink-muted text-sm leading-relaxed mb-5"),
                             Div(
-                                Span("Visit ", cls="text-accent text-sm"),
+                                Span(t("research_visit", lang) + " ", cls="text-accent text-sm"),
                                 Span("→", cls="text-accent text-sm"),
                             ),
                             cls="p-6 rounded-2xl bg-bg-elevated border border-line hover:border-accent/50 transition-colors h-full",
@@ -615,9 +611,9 @@ def team(request: Request):
         "Team",
         "/team",
         Section_(
-            Eyebrow("Team"),
-            Heading(1, "A small group, bound by the discipline the work demands.", cls="mt-5 max-w-4xl"),
-            P("We are deliberately small — senior engineers and scientists who own delivery end-to-end. We extend through a vetted partner network when a programme needs specialist clearance, language or capacity.",
+            Eyebrow(t("nav_team", lang)),
+            Heading(1, t("team_headline", lang), cls="mt-5 max-w-4xl"),
+            P(t("team_lede", lang),
               cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed"),
             cls="pt-24",
         ),
@@ -627,7 +623,7 @@ def team(request: Request):
                 cls="grid md:grid-cols-2 gap-5",
             ),
         ),
-        CTASection(headline="Looking to join us?", body="We work with hand-picked partners and occasional specialist contractors. If your background fits the capabilities on this site, tell us.", cta_label="Write to us", lang=lang),
+        CTASection(headline=t("team_join_headline", lang), body=t("team_join_body", lang), cta_label=t("team_write", lang), lang=lang),
         lang=lang,
     )
 
@@ -735,21 +731,21 @@ def contact(request: Request):
         t("nav_contact", lang),
         "/contact",
         Section_(
-            Eyebrow("Contact"),
-            Heading(1, "Brief us on the programme.", cls="mt-5 max-w-4xl"),
-            P("We work with public-sector buyers across the UK, the Nordics, the Benelux and the Baltics, and selectively with regulated enterprise clients. Tell us the problem — we'll tell you if we can help.",
+            Eyebrow(t("nav_contact", lang)),
+            Heading(1, t("contact_headline", lang), cls="mt-5 max-w-4xl"),
+            P(t("contact_lede", lang),
               cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed"),
             cls="pt-24",
         ),
         Section_(
             Div(
                 Div(
-                    Eyebrow("Write to us"),
+                    Eyebrow(t("contact_write_eyebrow", lang)),
                     Heading(2, CONTACT_EMAIL, cls="mt-4 break-all"),
-                    P("We read every brief personally. A short note on the buyer, the problem and the deadline is enough to start.",
+                    P(t("contact_write_body", lang),
                       cls="mt-5 text-ink-muted leading-relaxed"),
                     Div(
-                        Button_("Email " + CONTACT_EMAIL, href=f"mailto:{CONTACT_EMAIL}", primary=True),
+                        Button_(t("contact_email_btn", lang) + " " + CONTACT_EMAIL, href=f"mailto:{CONTACT_EMAIL}", primary=True),
                         cls="mt-8",
                     ),
                     cls="p-10 rounded-2xl bg-bg-elevated border border-line",
@@ -783,7 +779,7 @@ def contact(request: Request):
                         cls="mb-10",
                     ),
                     Div(
-                        H3("Channels", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
+                        H3(t("contact_channels", lang), cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
                         A("GitHub", href=GITHUB_URL, target="_blank", cls="block text-ink hover:text-accent mb-2"),
                         A("LinkedIn", href=LINKEDIN_URL, target="_blank", cls="block text-ink hover:text-accent mb-2"),
                     ),

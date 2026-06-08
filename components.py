@@ -487,7 +487,7 @@ def MetricTile(value, unit, caption, *, cls=""):
 
 def CaseStudyCard(cs, *, compact=False):
     tech = Div(
-        *[Pill(t) for t in cs.get("tech", [])[:6]],
+        *[Pill(tag) for tag in cs.get("tech", [])[:6]],
         cls="flex flex-wrap gap-2 mt-5",
     )
     return Article(
