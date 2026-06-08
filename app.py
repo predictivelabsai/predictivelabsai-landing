@@ -697,7 +697,7 @@ def thesis():
                 cls="text-ink-muted text-lg max-w-3xl leading-relaxed mb-10",
             ),
             Div(
-                Button_("Read the full strategy", href="https://digital-strategy.ec.europa.eu/en/policies/open-source-strategy", primary=True),
+                Button_("Read more", href="https://digital-strategy.ec.europa.eu/en/policies/open-source-strategy", primary=True),
                 Button_("See our open source work", href="/research", primary=False),
                 cls="flex items-center gap-3 flex-wrap",
             ),
@@ -739,21 +739,30 @@ def contact():
                 ),
                 Div(
                     Div(
-                        H3("Estonian entity", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
-                        P("Manmouna OÜ", cls="text-ink"),
-                        P("Teelise tn 10, Nõmme linnaosa", cls="text-ink-muted"),
-                        P("Tallinn, 10916", cls="text-ink-muted"),
-                        P("Estonia", cls="text-ink-muted"),
-                        P("Registry code 16289310", cls="text-ink-dim text-sm mt-3 font-mono"),
-                        cls="mb-10",
-                    ),
-                    Div(
                         H3("Registered office", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
                         P("Predictive Labs Ltd", cls="text-ink"),
                         P("155 Minories Street, Suite 275", cls="text-ink-muted"),
                         P("London, EC3N 1AD", cls="text-ink-muted"),
                         P("United Kingdom", cls="text-ink-muted"),
                         P("Company no. 14857334", cls="text-ink-dim text-sm mt-3 font-mono"),
+                        cls="mb-10",
+                    ),
+                    Div(
+                        H3("Lithuanian entity", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
+                        P("Predictive Labs, UAB", cls="text-ink"),
+                        P("Medeinos g. 35-70", cls="text-ink-muted"),
+                        P("Vilnius, LT-06137", cls="text-ink-muted"),
+                        P("Lithuania", cls="text-ink-muted"),
+                        P("Reg. code 307863496", cls="text-ink-dim text-sm mt-3 font-mono"),
+                        cls="mb-10",
+                    ),
+                    Div(
+                        H3("Estonian entity", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
+                        P("Manmouna OÜ", cls="text-ink"),
+                        P("Teelise tn 10, Nõmme linnaosa", cls="text-ink-muted"),
+                        P("Tallinn, 10916", cls="text-ink-muted"),
+                        P("Estonia", cls="text-ink-muted"),
+                        P("Registry code 16289310", cls="text-ink-dim text-sm mt-3 font-mono"),
                         cls="mb-10",
                     ),
                     Div(

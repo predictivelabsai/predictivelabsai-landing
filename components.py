@@ -293,6 +293,13 @@ def Footer_():
                         cls="text-ink-dim text-xs leading-relaxed mb-3",
                     ),
                     P(
+                        "Lithuania: Predictive Labs, UAB · Reg. 307863496", NotStr("<br>"),
+                        "Medeinos g. 35-70", NotStr("<br>"),
+                        "Vilnius, LT-06137", NotStr("<br>"),
+                        "Lithuania",
+                        cls="text-ink-dim text-xs leading-relaxed mb-3",
+                    ),
+                    P(
                         "Estonia: Manmouna OÜ · Registry code 16289310", NotStr("<br>"),
                         "Teelise tn 10", NotStr("<br>"),
                         "Tallinn, 10916", NotStr("<br>"),
