@@ -394,17 +394,18 @@ def last_refresh_iso() -> str | None:
     return datetime.fromtimestamp(_last_refresh, tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 
-def format_published(p: datetime | None) -> str:
+def format_published(p: datetime | None, *, lang: str = "en") -> str:
     if p is None:
         return ""
+    from utils.i18n import t as _t
     now = datetime.now(tz=timezone.utc)
     delta = now - p
     hours = int(delta.total_seconds() // 3600)
     if hours < 1:
-        return "just now"
+        return _t("time_just_now", lang)
     if hours < 24:
-        return f"{hours}h ago"
+        return _t("time_hours_ago", lang).replace("{n}", str(hours))
     days = hours // 24
     if days < 7:
-        return f"{days}d ago"
+        return _t("time_days_ago", lang).replace("{n}", str(days))
     return p.strftime("%d %b %Y")

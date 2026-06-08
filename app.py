@@ -73,6 +73,7 @@ def home(request: Request):
             headline=(Span(t("home_headline_1", lang)), Span(t("home_headline_2", lang), cls="text-accent"), Span(t("home_headline_3", lang))),
             lede=t("home_lede", lang),
             ctas=[(t("home_cta_see", lang), "/platform", True), (t("nav_talk_to_us", lang), "/contact", False)],
+            lang=lang,
         ),
 
         Section_(
@@ -121,7 +122,7 @@ def home(request: Request):
                 cls="mb-14 flex flex-col md:flex-row md:items-end md:justify-between gap-4",
             ),
             Div(
-                *[CaseStudyCard(c, compact=True) for c in home_cases],
+                *[CaseStudyCard(c, compact=True, lang=lang) for c in home_cases],
                 cls="grid md:grid-cols-3 gap-5",
             ),
             Div(
@@ -135,11 +136,7 @@ def home(request: Request):
                 Div(
                     Eyebrow(t("nav_signal", lang)),
                     Heading(2, t("home_signal_heading", lang), cls="mt-4 max-w-3xl"),
-                    P(
-                        "Public-sector delivery starts with the public data. A live view of NHS waiting lists, European ",
-                        SectorLink("defence"), " spend, school ",
-                        SectorLink("attainment", sector="education"), " gaps, ",
-                        SectorLink("energy"), " mix and AI readiness — the canvases our programmes run against.",
+                    P(t("home_signal_body", lang),
                         cls="mt-5 text-ink-muted text-lg max-w-2xl leading-relaxed",
                     ),
                     Button_(t("home_open_signal", lang), href="/signal", primary=True, cls="mt-8"),
@@ -158,6 +155,7 @@ def home(request: Request):
             category="home",
             title=t("home_news_title", lang),
             subtitle=t("home_news_subtitle", lang),
+            lang=lang,
         ),
 
         CTASection(lang=lang),
@@ -205,17 +203,17 @@ def _teaser_json():
 def platform(request: Request):
     lang = _lang(request)
     pillars = [
-        ("01", "Document intelligence", "We build ingest-and-reason pipelines over the documents your mission actually runs on — statutes, protocols, ITT packs, rating manuals. Every extraction is citation-anchored and every answer is reproducible from the source."),
-        ("02", "Applied forecasting", "From elective-surgery demand to public-sector revenue, we fuse authoritative internal records with open, alternative and satellite data. Models are versioned, backtested and delivered with the evaluation harness that keeps them honest."),
-        ("03", "Geospatial and mobility", "Traffic, probe-vehicle data, ANPR and infrastructure telemetry turned into origin-destination matrices, congestion signatures and operational situation pictures. Reference implementations like open-od-toolkit stay in the public domain."),
-        ("04", "Agentic workflows", "Multi-step LLM agents that plan, call tools and defer to humans, running inside your security boundary. We instrument every step with evaluations, audit logs and explicit escalation paths."),
+        ("01", t("pillar_doc_intel", lang), t("plat_pillar_doc_body", lang)),
+        ("02", t("pillar_forecasting", lang), t("plat_pillar_forecast_body", lang)),
+        ("03", t("pillar_geo", lang), t("plat_pillar_geo_body", lang)),
+        ("04", t("pillar_agents", lang), t("plat_pillar_agents_body", lang)),
     ]
 
     commitments = [
-        ("Auditability by design", "Every pipeline is versioned; every model output can be traced back to a specific input, prompt, and revision."),
-        ("Open where it's better open", "Commoditised capabilities go to GitHub. Clients get the specific work; the method stays in the community."),
-        ("GDPR-native", "Data-protection impact assessment first, then architecture. No data leaves the territory unless the client and the law both say it can."),
-        ("Evaluation before volume", "Before a model handles a case, it has to answer for a hundred held-out ones. Before an agent acts, it has to pass a red-team."),
+        (t("commit_audit_title", lang), t("commit_audit_body", lang)),
+        (t("commit_open_title", lang), t("commit_open_body", lang)),
+        (t("commit_gdpr_title", lang), t("commit_gdpr_body", lang)),
+        (t("commit_eval_title", lang), t("commit_eval_body", lang)),
     ]
 
     return page(
@@ -278,10 +276,9 @@ def _platform_row(number, title, body):
 
 SOLUTIONS = {
     "defense": {
-        "title": "Defense & public security",
-        "eyebrow": "Defense & public security",
-        "headline": "Decision support where the stakes are operational.",
-        "lede": "Satellite-imagery analytics, situation-picture tooling and document intelligence for defence, justice and critical-infrastructure bodies — with clear separation between AI assistance and human authority.",
+        "title_key": "sol_defense_title",
+        "headline_key": "sol_defense_headline",
+        "lede_key": "sol_defense_lede",
         "pillars": [
             ("Satellite & geospatial intelligence", "From Sentinel-2 imagery pipelines to change-detection and OSINT fusion, delivered through reproducible open-source stacks."),
             ("Situation pictures", "Fused operational views for municipal and national operators — sensor feeds, anomaly detection, incident summaries."),
@@ -289,25 +286,25 @@ SOLUTIONS = {
         ],
         "case_ids": ["nl-justice-dataplatform", "nordic-city-signal", "uk-traffic-od"],
         "register": ["Operational confidence", "Auditable decision trail", "Human in authority"],
+        "news_cat": "defense",
     },
     "healthcare": {
-        "title": "Health & life sciences",
-        "eyebrow": "Health & life sciences",
-        "headline": "Real-world evidence and hospital operations, with patient data treated as such.",
-        "lede": "Privacy-preserving analytics over national registries, protocol-design automation for health-technology assessment, and AI-application development across hospital systems — delivered with EU AI Act and clinical-data discipline.",
+        "title_key": "sol_health_title",
+        "headline_key": "sol_health_headline",
+        "lede_key": "sol_health_lede",
         "pillars": [
             ("Real-world data and evidence", "Pipelines over inpatient records, dispensing data and civil registries, with protocol templates that compress follow-up cycles."),
-            ("Hospital operations", "Elective-recovery forecasting, capacity planning and AI-sovelluskehitys for the panels Europe's largest hospital systems put on frameworks."),
+            ("Hospital operations", "Elective-recovery forecasting, capacity planning and AI application development for the panels Europe's largest hospital systems put on frameworks."),
             ("Clinical document intelligence", "Extraction and structured summarisation of clinical and regulatory documents, audited against human adjudication."),
         ],
         "case_ids": ["nordic-health-rwd", "nordic-health-panel", "microsoft-isd"],
         "register": ["GDPR-native", "EU AI Act readiness", "Clinical audit trail"],
+        "news_cat": "healthcare",
     },
     "public": {
-        "title": "Public management & mobility",
-        "eyebrow": "Public management & mobility",
-        "headline": "Open data, open code, operational insight.",
-        "lede": "Traffic, mobility, municipal planning and data-quality programmes for European public bodies — built on open data, shipped with reference implementations, and priced honestly against the budget on the notice.",
+        "title_key": "sol_public_title",
+        "headline_key": "sol_public_headline",
+        "lede_key": "sol_public_lede",
         "pillars": [
             ("Traffic and origin-destination analytics", "County- and city-scale mobility analytics built on ANPR, Bluetooth and open-data fusion, with methodology published on GitHub."),
             ("Municipal data foundations", "Data-quality frameworks, dynamic purchasing frameworks and continuous analytics call-offs for municipalities."),
@@ -315,12 +312,12 @@ SOLUTIONS = {
         ],
         "case_ids": ["uk-traffic-od", "nordic-city-signal", "dk-data-quality"],
         "register": ["Open-source by default", "Reference implementations", "Interoperable"],
+        "news_cat": "public",
     },
     "financial": {
-        "title": "Financial services",
-        "eyebrow": "Financial services",
-        "headline": "Where we came from — and where we still deliver, selectively.",
-        "lede": "Rating models, revenue forecasting and document intelligence inside regulated institutions. Financial services is the root of our practice and remains about a fifth of our work today.",
+        "title_key": "sol_financial_title",
+        "headline_key": "sol_financial_headline",
+        "lede_key": "sol_financial_lede",
         "pillars": [
             ("Rating and risk models", "Production machine-learning for credit and securitisation ratings, deployed with regulatory auditability."),
             ("Revenue and demand forecasting", "Time-series modelling for enterprise revenue planning, integrating alternative datasets."),
@@ -328,15 +325,8 @@ SOLUTIONS = {
         ],
         "case_ids": ["dbrs-rmbs", "arm-forecasting", "microsoft-isd"],
         "register": ["Production ML ops", "Regulatory auditability", "Enterprise scale"],
+        "news_cat": "financial",
     },
-}
-
-
-SOLUTION_NEWS = {
-    "defense": ("defense", "Defence and public-security signal.", "Latest from MoD announcements, EU defence procurement and the wider defence-AI conversation."),
-    "healthcare": ("healthcare", "Health and life-sciences signal.", "NHS digital-health coverage, DHSC announcements, and European health-data developments."),
-    "public": ("public", "Public-management and mobility signal.", "UK central and local government digital, procurement and AI deployment news."),
-    "financial": ("financial", "Financial-services signal.", "Financial-services AI, regulation and FinTech deployment across the UK and Europe."),
 }
 
 
@@ -344,15 +334,14 @@ def _solution_page(slug, request: Request):
     lang = _lang(request)
     s = SOLUTIONS[slug]
     cases = [c for c in ALL_CASES if c["id"] in s["case_ids"]]
-    news_key, news_title, news_sub = SOLUTION_NEWS[slug]
 
     return page(
-        s["title"],
+        t(s["title_key"], lang),
         f"/solutions/{slug}",
         Section_(
-            Eyebrow(s["eyebrow"]),
-            Heading(1, s["headline"], cls="mt-5 max-w-5xl"),
-            P(s["lede"], cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed"),
+            Eyebrow(t(s["title_key"], lang)),
+            Heading(1, t(s["headline_key"], lang), cls="mt-5 max-w-5xl"),
+            P(t(s["lede_key"], lang), cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed"),
             Div(
                 *[Pill(r) for r in s["register"]],
                 cls="mt-10 flex flex-wrap gap-2",
@@ -377,12 +366,12 @@ def _solution_page(slug, request: Request):
                 cls="mb-14",
             ),
             Div(
-                *[CaseStudyCard(c) for c in cases],
+                *[CaseStudyCard(c, lang=lang) for c in cases],
                 cls="grid md:grid-cols-3 gap-5",
             ),
             cls="border-t border-line bg-bg-elevated/40",
         ),
-        NewsSection(category=news_key, title=news_title, subtitle=news_sub),
+        NewsSection(category=s["news_cat"], title=t(s["title_key"], lang), lang=lang),
         CTASection(lang=lang),
         lang=lang,
     )
@@ -430,7 +419,7 @@ def case_studies(request: Request):
                 cls="mb-14",
             ),
             Div(
-                *[CaseStudyCard(c) for c in BID_DERIVED],
+                *[CaseStudyCard(c, lang=lang) for c in BID_DERIVED],
                 cls="grid md:grid-cols-2 gap-5",
             ),
         ),
@@ -441,7 +430,7 @@ def case_studies(request: Request):
                 cls="mb-14",
             ),
             Div(
-                *[CaseStudyCard(c) for c in NAMED_PRECEDENTS],
+                *[CaseStudyCard(c, lang=lang) for c in NAMED_PRECEDENTS],
                 cls="grid md:grid-cols-3 gap-5",
             ),
             cls="border-t border-line bg-bg-elevated/40",
@@ -513,8 +502,8 @@ def signal(request: Request):
             cls="border-t border-line",
         ),
         CTASection(
-            headline="Want this on your data?",
-            body="Signal is a public view. Our client engagements operate the same primitives over proprietary and regulated data — with the governance, access control and evaluation harness that regulated work requires.",
+            headline=t("signal_cta_headline", lang),
+            body=t("signal_cta_body", lang),
             lang=lang,
         ),
         lang=lang,

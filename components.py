@@ -401,17 +401,11 @@ def page(title: str, current_path: str = "/", *content, head_extra=None, body_ex
 
 # ---------- Higher-level building blocks ----------
 
-def Hero(*, eyebrow="AI for public outcomes", headline=None, lede=None, ctas=None, canvas=True, tall=True):
-    headline = headline or (Span("Decisions made "), Span("with evidence,", cls="text-accent"), Span(" at the scale of the public good."))
-    lede = lede or (
-        "Predictive Labs builds AI systems for European public services — in ",
-        SectorLink("health"), ", ",
-        SectorLink("defense"), ", ",
-        SectorLink("public management"), " and ",
-        SectorLink("mobility"),
-        " — that are auditable by design and open where they can be.",
-    )
-    ctas = ctas or [("See what we build", "/platform", True), ("Talk to us", "/contact", False)]
+def Hero(*, eyebrow=None, headline=None, lede=None, ctas=None, canvas=True, tall=True, lang="en"):
+    eyebrow = eyebrow or t("hero_eyebrow", lang)
+    headline = headline or (Span(t("home_headline_1", lang)), Span(t("home_headline_2", lang), cls="text-accent"), Span(t("home_headline_3", lang)))
+    lede = lede or t("home_lede", lang)
+    ctas = ctas or [(t("home_cta_see", lang), "/platform", True), (t("nav_talk_to_us", lang), "/contact", False)]
 
     height = "min-h-[82vh] md:min-h-[88vh]" if tall else "min-h-[56vh] md:min-h-[60vh]"
 
@@ -450,11 +444,11 @@ def Hero(*, eyebrow="AI for public outcomes", headline=None, lede=None, ctas=Non
         ),
         Div(
             Div(
-                Div("AI for public outcomes", cls="text-[11px] md:text-xs font-mono tracking-[0.18em] uppercase text-ink-dim"),
+                Div(t("hero_eyebrow", lang), cls="text-[11px] md:text-xs font-mono tracking-[0.18em] uppercase text-ink-dim"),
                 Div(
-                    Span("Active engagements across ", cls="text-ink-muted text-xs md:text-sm"),
+                    Span(t("hero_engagements", lang) + " ", cls="text-ink-muted text-xs md:text-sm"),
                     Span("6 ", cls="text-accent text-xs md:text-sm font-mono"),
-                    Span("European public-sector programmes", cls="text-ink-muted text-xs md:text-sm"),
+                    Span(t("hero_programmes", lang), cls="text-ink-muted text-xs md:text-sm"),
                 ),
                 cls="max-w-7xl mx-auto px-5 md:px-6 py-4 md:py-5 flex items-center justify-between flex-wrap gap-3",
             ),
@@ -488,7 +482,7 @@ def MetricTile(value, unit, caption, *, cls=""):
     )
 
 
-def CaseStudyCard(cs, *, compact=False):
+def CaseStudyCard(cs, *, compact=False, lang="en"):
     tech = Div(
         *[Pill(tag) for tag in cs.get("tech", [])[:6]],
         cls="flex flex-wrap gap-2 mt-5",
@@ -506,17 +500,17 @@ def CaseStudyCard(cs, *, compact=False):
         P(cs["buyer"], cls="text-ink-muted text-sm font-mono mb-5"),
         Div(
             Div(
-                Div("Problem", cls="text-[10px] font-mono tracking-widest uppercase text-ink-dim mb-1"),
+                Div(t("case_problem", lang), cls="text-[10px] font-mono tracking-widest uppercase text-ink-dim mb-1"),
                 P(cs["problem"], cls="text-ink-muted text-sm leading-relaxed"),
                 cls="mb-4",
             ),
             Div(
-                Div("Approach", cls="text-[10px] font-mono tracking-widest uppercase text-ink-dim mb-1"),
+                Div(t("case_approach", lang), cls="text-[10px] font-mono tracking-widest uppercase text-ink-dim mb-1"),
                 P(cs["approach"], cls="text-ink text-sm leading-relaxed"),
                 cls="mb-4",
             ),
             Div(
-                Div("Capability", cls="text-[10px] font-mono tracking-widest uppercase text-ink-dim mb-1"),
+                Div(t("case_capability", lang), cls="text-[10px] font-mono tracking-widest uppercase text-ink-dim mb-1"),
                 P(cs["capability"], cls="text-ink-muted text-sm leading-relaxed italic"),
             ) if not compact else None,
         ),
@@ -526,19 +520,21 @@ def CaseStudyCard(cs, *, compact=False):
 
 
 def NewsSection(*, category: str, title: str = "From the feed",
-                subtitle: str | None = None, eyebrow: str = "News"):
+                subtitle: str | None = None, eyebrow: str | None = None, lang: str = "en"):
     """Render a compact news block. Items are pulled from content/news.py's
     in-memory cache; if empty (cold start, before the background refresher
     has populated the cache) the section is hidden entirely so we never
     show an empty shell."""
     from content import news as _news
 
+    eyebrow = eyebrow or t("news_eyebrow", lang)
+
     items = _news.items_for(category)
     if not items:
         return Div()  # empty placeholder — hidden via absence of children
 
     def _item(it):
-        pub = _news.format_published(it.get("published"))
+        pub = _news.format_published(it.get("published"), lang=lang)
         meta = [Span(it["source"], cls="text-ink-dim text-xs font-mono")]
         if pub:
             meta.append(Span("·", cls="text-ink-dim text-xs mx-2"))
@@ -555,24 +551,14 @@ def NewsSection(*, category: str, title: str = "From the feed",
             cls="block group",
         )
 
-    last = _news.last_refresh_iso()
-
     return Section_(
         Div(
             Div(
                 Eyebrow(eyebrow),
                 Heading(2, title, cls="mt-4 max-w-3xl"),
                 P(subtitle, cls="mt-4 text-ink-muted max-w-2xl leading-relaxed") if subtitle else None,
-                cls="md:flex-1",
             ),
-            Div(
-                Span("Refreshed hourly from public RSS + Atom feeds.",
-                     cls="text-ink-dim text-xs"),
-                Span(NotStr("&nbsp;·&nbsp;") + f"Last refresh: {last}" if last else "",
-                     cls="text-ink-dim text-xs"),
-                cls="text-left md:text-right md:max-w-xs mt-4 md:mt-0",
-            ),
-            cls="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4",
+            cls="mb-10",
         ),
         Div(
             *[_item(it) for it in items],
