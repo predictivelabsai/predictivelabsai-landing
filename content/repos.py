@@ -70,18 +70,18 @@ REPOS = [
         "relevance": "HIGH",
     },
     {
-        "name": "hedgefolio",
-        "url": "https://github.com/predictivelabsai/hedgefolio",
-        "tagline": "Portfolio optimisation with modern portfolio theory and machine learning.",
-        "tags": ["Financial services", "Research", "Python"],
-        "relevance": "MED",
+        "name": "bricksmith",
+        "url": "https://github.com/predictivelabsai/bricksmith",
+        "tagline": "AI-powered commercial real estate deal squad — underwriting, closing and managing CRE deals.",
+        "tags": ["Real estate", "FastHTML", "Python"],
+        "relevance": "HIGH",
     },
     {
-        "name": "fincode",
-        "url": "https://github.com/predictivelabsai/fincode",
-        "tagline": "Library for financial data analysis, backtesting, and strategy development.",
-        "tags": ["Financial services", "Research", "Python"],
-        "relevance": "MED",
+        "name": "kanvas",
+        "url": "https://github.com/predictivelabsai/kanvas",
+        "tagline": "AI art advisory, research and education platform — collection management, valuation and provenance tracking.",
+        "tags": ["Art & culture", "FastHTML", "Python"],
+        "relevance": "HIGH",
     },
 ]
 
