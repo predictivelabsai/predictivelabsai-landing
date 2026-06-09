@@ -1775,6 +1775,12 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "no": "Estisk enhet", "da": "Estisk enhed", "pl": "Podmiot estoński",
         "nl": "Estse entiteit", "fi": "Viron yksikkö", "lt": "Estijos juridinis asmuo",
     },
+    "contact_ee_entity_2": {
+        "en": "Estonian entity (2)", "et": "Eesti üksus (2)", "de": "Estnische Einheit (2)",
+        "fr": "Entité estonienne (2)", "sv": "Estnisk enhet (2)", "lv": "Igaunijas vienība (2)",
+        "no": "Estisk enhet (2)", "da": "Estisk enhed (2)", "pl": "Podmiot estoński (2)",
+        "nl": "Estse entiteit (2)", "fi": "Viron yksikkö (2)", "lt": "Estijos juridinis asmuo (2)",
+    },
     "signal_source": {
         "en": "Source:", "et": "Allikas:", "de": "Quelle:",
         "fr": "Source :", "sv": "Källa:", "lv": "Avots:",

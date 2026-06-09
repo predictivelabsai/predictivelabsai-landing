@@ -772,6 +772,15 @@ def contact(request: Request):
                         cls="mb-10",
                     ),
                     Div(
+                        H3(t("contact_ee_entity_2", lang), cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
+                        P("Manmouna OÜ", cls="text-ink"),
+                        P("Teelise tn 10, Nõmme linnaosa", cls="text-ink-muted"),
+                        P("10916 Tallinn, Harju maakond", cls="text-ink-muted"),
+                        P("Estonia", cls="text-ink-muted"),
+                        P("Registry code 16289310", cls="text-ink-dim text-sm mt-3 font-mono"),
+                        cls="mb-10",
+                    ),
+                    Div(
                         H3(t("contact_channels", lang), cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
                         A("GitHub", href=GITHUB_URL, target="_blank", cls="block text-ink hover:text-accent mb-2"),
                         A("LinkedIn", href=LINKEDIN_URL, target="_blank", cls="block text-ink hover:text-accent mb-2"),

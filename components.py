@@ -343,6 +343,14 @@ def Footer_(lang: str = "en"):
                         "Registry code 12061679", NotStr("<br>"),
                         "Karsti 3", NotStr("<br>"),
                         "Tallinn, 11625",
+                        cls="text-ink-dim text-xs leading-relaxed mb-3",
+                    ),
+                    P(
+                        "Estonia", NotStr("<br>"),
+                        "Manmouna OÜ", NotStr("<br>"),
+                        "Registry code 16289310", NotStr("<br>"),
+                        "Teelise tn 10, Nõmme linnaosa", NotStr("<br>"),
+                        "10916 Tallinn, Harju maakond",
                         cls="text-ink-dim text-xs leading-relaxed",
                     ),
                 ),
@@ -379,6 +387,7 @@ def page(title: str, current_path: str = "/", *content, head_extra=None, body_ex
         ),
         Script(src="https://cdn.tailwindcss.com"),
         Script(NotStr(TAILWIND_CONFIG)),
+        Link(rel="icon", type="image/svg+xml", href="/static/favicon.svg"),
         Link(rel="stylesheet", href="/static/site.css"),
     ]
     if head_extra:
