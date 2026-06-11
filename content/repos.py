@@ -42,6 +42,13 @@ REPOS = [
         "relevance": "HIGH",
     },
     {
+        "name": "FastClinic",
+        "url": "https://github.com/predictivelabsai/FastClinic",
+        "tagline": "Open-source GP / general-practice marketing & activation cockpit built with FastHTML — patient activation engines, SMS & email broadcasters, an LLM SEO audit suite and an AI assistant, all on synthetic data.",
+        "tags": ["FastHTML", "Healthcare", "Activation"],
+        "relevance": "HIGH",
+    },
+    {
         "name": "teleradiology-toolkit",
         "url": "https://github.com/predictivelabsai/teleradiology-toolkit",
         "tagline": "Open building blocks for teleradiology workflows — E027-va form handling, DICOM/PACS integration, FHIR support and XAdES signing.",
