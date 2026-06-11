@@ -38,7 +38,7 @@ ROUTES = [
     ("/solutions/financial", "solutions-financial", "selectively"),
     ("/case-studies", "case-studies", "Engagements"),
     ("/signal", "signal", "Public-sector data"),
-    ("/research", "research", "commons"),
+    ("/open-source", "open-source", "commons"),
     ("/team", "team", "small group"),
     ("/contact", "contact", "programme"),
 ]

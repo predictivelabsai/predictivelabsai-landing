@@ -33,7 +33,7 @@ def _nav_items(lang: str = "en"):
         ]),
         (t("nav_case_studies", lang), "/case-studies"),
         (t("nav_signal", lang), "/signal"),
-        (t("nav_research", lang), "/research"),
+        (t("nav_research", lang), "/open-source"),
         (t("nav_thesis", lang), "/thesis"),
         (t("nav_team", lang), "/team"),
         (t("nav_contact", lang), "/contact"),
@@ -282,7 +282,7 @@ def Footer_(lang: str = "en"):
             (t("footer_overview", lang), "/platform"),
             (t("nav_case_studies", lang), "/case-studies"),
             (t("nav_signal", lang), "/signal"),
-            (t("nav_research", lang), "/research"),
+            (t("nav_research", lang), "/open-source"),
         ]),
         (t("footer_solutions", lang), [
             (t("nav_sol_defense", lang), "/solutions/defense"),

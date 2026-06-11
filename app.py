@@ -6,7 +6,7 @@ routes are thin composition layers over components.py primitives.
 """
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, RedirectResponse
 
 from fasthtml.common import (
     fast_app, serve, Div, Span, A, P, Ul, Li, Section, Article, Header,
@@ -518,19 +518,30 @@ def signal(request: Request):
     )
 
 
-# ---------- /research ----------
+# ---------- /open-source ----------
 
 @rt("/research")
-def research(request: Request):
+def research_redirect():
+    return RedirectResponse("/open-source", status_code=301)
+
+@rt("/open-source")
+def open_source(request: Request):
     lang = _lang(request)
     return page(
-        "Research",
-        "/research",
+        "Open Source",
+        "/open-source",
         Section_(
             Eyebrow(t("research_eyebrow", lang)),
             Heading(1, t("research_headline", lang), cls="mt-5 max-w-4xl"),
             P(t("research_lede", lang),
               cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed"),
+            P(
+                t("opensource_ec_note", lang) + " ",
+                A(t("opensource_ec_link", lang) + " →",
+                  href="https://digital-strategy.ec.europa.eu/en/policies/open-source-strategy",
+                  target="_blank", cls="text-accent hover:underline"),
+                cls="mt-6 text-ink-muted max-w-3xl leading-relaxed",
+            ),
             cls="pt-24",
         ),
         Section_(
@@ -701,7 +712,7 @@ def thesis(request: Request):
             P(t("thesis_why_body2", lang), cls="text-ink-muted text-lg max-w-3xl leading-relaxed mb-10"),
             Div(
                 Button_(t("thesis_read_more", lang), href="https://digital-strategy.ec.europa.eu/en/policies/open-source-strategy", primary=True),
-                Button_(t("thesis_see_research", lang), href="/research", primary=False),
+                Button_(t("thesis_see_research", lang), href="/open-source", primary=False),
                 cls="flex items-center gap-3 flex-wrap",
             ),
             cls="border-t border-line bg-bg-elevated/40",

@@ -118,10 +118,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "nl": "Signaal", "fi": "Signaali", "lt": "Signalas",
     },
     "nav_research": {
-        "en": "Research", "et": "Teadus", "de": "Forschung",
-        "fr": "Recherche", "sv": "Forskning", "lv": "Pētniecība",
-        "no": "Forskning", "da": "Forskning", "pl": "Badania",
-        "nl": "Onderzoek", "fi": "Tutkimus", "lt": "Tyrimai",
+        "en": "Open Source", "et": "Avatud lähtekood", "de": "Open Source",
+        "fr": "Open source", "sv": "Öppen källkod", "lv": "Atvērtais pirmkods",
+        "no": "Åpen kildekode", "da": "Open source", "pl": "Open source",
+        "nl": "Open source", "fi": "Avoin lähdekoodi", "lt": "Atvirasis kodas",
     },
     "nav_thesis": {
         "en": "Thesis", "et": "Tees", "de": "These",
@@ -1126,12 +1126,32 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "lt": "Penki drobės per sektorius, kuriuos aptarnaujame. Kiekvienas skaičius yra iš įvardinto viešojo duomenų rinkinio ir cituojamas po savo diagrama. Niekas čia nėra kliento artefaktas.",
     },
 
-    # ── Research page ─────────────────────────────────────────
+    # ── Open Source page ──────────────────────────────────────
     "research_eyebrow": {
-        "en": "Research & open source", "et": "Teadus ja avatud lähtekood", "de": "Forschung & Open Source",
-        "fr": "Recherche & open source", "sv": "Forskning & öppen källkod", "lv": "Pētniecība un atvērtais pirmkods",
-        "no": "Forskning og åpen kildekode", "da": "Forskning og open source", "pl": "Badania i open source",
-        "nl": "Onderzoek & open source", "fi": "Tutkimus ja avoin lähdekoodi", "lt": "Tyrimai ir atvirasis kodas",
+        "en": "Open source", "et": "Avatud lähtekood", "de": "Open Source",
+        "fr": "Open source", "sv": "Öppen källkod", "lv": "Atvērtais pirmkods",
+        "no": "Åpen kildekode", "da": "Open source", "pl": "Open source",
+        "nl": "Open source", "fi": "Avoin lähdekoodi", "lt": "Atvirasis kodas",
+    },
+    "opensource_ec_note": {
+        "en": "Aligned with the European Commission's Open Source Software Strategy.",
+        "et": "Kooskõlas Euroopa Komisjoni avatud lähtekoodiga tarkvara strateegiaga.",
+        "de": "Im Einklang mit der Open-Source-Software-Strategie der Europäischen Kommission.",
+        "fr": "Aligné sur la stratégie logiciel open source de la Commission européenne.",
+        "sv": "I linje med Europeiska kommissionens strategi för öppen källkod.",
+        "lv": "Saskaņā ar Eiropas Komisijas atvērtā pirmkoda programmatūras stratēģiju.",
+        "no": "I tråd med Europakommisjonens strategi for åpen kildekode.",
+        "da": "I tråd med Europa-Kommissionens open source-softwarestrategi.",
+        "pl": "Zgodnie ze strategią Komisji Europejskiej dotyczącą oprogramowania open source.",
+        "nl": "In lijn met de opensourcesoftwarestrategie van de Europese Commissie.",
+        "fi": "Euroopan komission avoimen lähdekoodin ohjelmistostrategian mukaisesti.",
+        "lt": "Atitinka Europos Komisijos atvirojo kodo programinės įrangos strategiją.",
+    },
+    "opensource_ec_link": {
+        "en": "Read the strategy", "et": "Loe strateegiat", "de": "Strategie lesen",
+        "fr": "Lire la stratégie", "sv": "Läs strategin", "lv": "Lasīt stratēģiju",
+        "no": "Les strategien", "da": "Læs strategien", "pl": "Przeczytaj strategię",
+        "nl": "Lees de strategie", "fi": "Lue strategia", "lt": "Skaityti strategiją",
     },
     "research_headline": {
         "en": "Commoditised capability goes to the commons.",
@@ -1176,10 +1196,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fi": "Avoimen lähdekoodin työkalut.", "lt": "Atvirojo kodo įrankiai.",
     },
     "research_platforms_eyebrow": {
-        "en": "Research platforms", "et": "Teadusplatvormid", "de": "Forschungsplattformen",
-        "fr": "Plateformes de recherche", "sv": "Forskningsplattformar", "lv": "Pētniecības platformas",
-        "no": "Forskningsplattformer", "da": "Forskningsplatforme", "pl": "Platformy badawcze",
-        "nl": "Onderzoeksplatformen", "fi": "Tutkimusalustat", "lt": "Tyrimų platformos",
+        "en": "Live platforms", "et": "Reaalajas platvormid", "de": "Live-Plattformen",
+        "fr": "Plateformes en direct", "sv": "Liveplattformar", "lv": "Tiešsaistes platformas",
+        "no": "Live-plattformer", "da": "Live-platforme", "pl": "Platformy na żywo",
+        "nl": "Live platformen", "fi": "Live-alustat", "lt": "Tiesioginės platformos",
     },
     "research_platforms_heading": {
         "en": "Running research on live markets.", "et": "Reaalajas turgudel toimivad uuringud.",
