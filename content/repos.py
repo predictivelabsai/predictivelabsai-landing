@@ -70,13 +70,6 @@ REPOS = [
         "relevance": "HIGH",
     },
     {
-        "name": "micromobility-rules-toolkit",
-        "url": "https://github.com/predictivelabsai",
-        "tagline": "Open rules engine for city-side management of shared-vehicle fleets — MDS ingestion, geofence evaluation and violation detection.",
-        "tags": ["Public mobility", "Geospatial", "Python"],
-        "relevance": "HIGH",
-    },
-    {
         "name": "bricksmith",
         "url": "https://github.com/predictivelabsai/bricksmith",
         "tagline": "AI-powered commercial real estate deal squad — underwriting, closing and managing CRE deals.",
