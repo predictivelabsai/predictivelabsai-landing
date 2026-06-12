@@ -117,7 +117,7 @@ APP_SUITE = [
         "apps": [
             {"name": "FastERP", "url": "https://github.com/predictivelabsai/FastERP",
              "upstream": "erpnext", "feature": "Order-to-Cash + AR aging",
-             "tagline": "An Order-to-Cash + Inventory slice of ERPNext: items & stock, customers, sales orders, invoices with AR aging, and a grounded AI assistant."},
+             "tagline": "Order-to-cash and inventory: items & stock, customers, sales orders, invoices with AR aging, purchasing, a basic general ledger, and a grounded AI assistant."},
             {"name": "FastHRM", "url": "https://github.com/predictivelabsai/FastHRM",
              "upstream": "hrms", "feature": "Leave, attendance & payroll",
              "tagline": "An HR system scoped to three pillars — people, time and pay — with employee profiles, leave balances, attendance and payslips."},

@@ -547,11 +547,11 @@ def open_source(request: Request):
         Section_(
             Div(
                 Eyebrow("Open-source app suite"),
-                Heading(2, "Frappe, reimagined in FastHTML", cls="mt-4 max-w-3xl"),
+                Heading(2, "Open Source Enterprise", cls="mt-4 max-w-3xl"),
                 P(
-                    "Ten Frappe business apps rebuilt as server-rendered, Python-first apps — "
-                    "HTMX for interactivity, no JavaScript framework, each with a multi-provider "
-                    "AI assistant. MIT-licensed, running on synthetic data.",
+                    "A complete suite of open-source business apps — CRM, helpdesk, ERP, HR, "
+                    "mail, analytics and more — each with a built-in AI assistant. Free to use, "
+                    "self-hostable, and yours to extend.",
                     cls="mt-6 text-ink-muted max-w-3xl leading-relaxed",
                 ),
                 cls="mb-14",
@@ -577,7 +577,7 @@ def open_source(request: Request):
                                     ),
                                     P(app["tagline"], cls="text-ink-muted text-sm leading-relaxed mb-4"),
                                     Div(
-                                        Span("frappe/" + app["upstream"], cls="font-mono text-[11px] text-ink-muted"),
+                                        Span("Open source · MIT", cls="text-[11px] text-ink-muted"),
                                         Span("View →", cls="ml-auto text-accent text-sm"),
                                         cls="flex items-center",
                                     ),
