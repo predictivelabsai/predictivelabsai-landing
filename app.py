@@ -20,7 +20,7 @@ from components import (
 )
 from content.case_studies import ALL as ALL_CASES, BID_DERIVED, NAMED_PRECEDENTS
 from content.team import TEAM
-from content.repos import REPOS, EXTERNAL_RESEARCH
+from content.repos import REPOS, EXTERNAL_RESEARCH, APP_SUITE
 from content import signal as signal_mod
 from content import news as news_mod
 from utils.i18n import t, get_lang, set_lang
@@ -543,6 +543,58 @@ def open_source(request: Request):
                 cls="mt-6 text-ink-muted max-w-3xl leading-relaxed",
             ),
             cls="pt-24",
+        ),
+        Section_(
+            Div(
+                Eyebrow("Open-source app suite"),
+                Heading(2, "Frappe, reimagined in FastHTML", cls="mt-4 max-w-3xl"),
+                P(
+                    "Ten Frappe business apps rebuilt as server-rendered, Python-first apps — "
+                    "HTMX for interactivity, no JavaScript framework, each with a multi-provider "
+                    "AI assistant. MIT-licensed, running on synthetic data.",
+                    cls="mt-6 text-ink-muted max-w-3xl leading-relaxed",
+                ),
+                cls="mb-14",
+            ),
+            *[
+                Div(
+                    Div(
+                        Span(grp["category"], cls="text-ink font-medium"),
+                        Span(grp["blurb"], cls="ml-3 text-ink-muted text-sm"),
+                        cls="flex items-baseline mb-5 pb-3 border-b border-line",
+                    ),
+                    Div(
+                        *[
+                            A(
+                                Div(
+                                    Div(
+                                        Span(app["name"], cls="font-semibold text-ink"),
+                                        Span(
+                                            app["feature"],
+                                            cls="ml-auto text-[10px] font-mono tracking-widest px-2 py-0.5 rounded-full border border-accent text-accent",
+                                        ),
+                                        cls="flex items-center mb-3",
+                                    ),
+                                    P(app["tagline"], cls="text-ink-muted text-sm leading-relaxed mb-4"),
+                                    Div(
+                                        Span("frappe/" + app["upstream"], cls="font-mono text-[11px] text-ink-muted"),
+                                        Span("View →", cls="ml-auto text-accent text-sm"),
+                                        cls="flex items-center",
+                                    ),
+                                    cls="p-6 rounded-2xl bg-bg-elevated border border-line hover:border-accent/50 transition-colors h-full",
+                                ),
+                                href=app["url"],
+                                target="_blank",
+                                cls="block",
+                            )
+                            for app in grp["apps"]
+                        ],
+                        cls="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-12",
+                    ),
+                )
+                for grp in APP_SUITE
+            ],
+            cls="border-b border-line",
         ),
         Section_(
             Div(
