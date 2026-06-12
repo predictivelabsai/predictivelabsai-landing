@@ -546,6 +546,18 @@ def open_source(request: Request):
         ),
         Section_(
             Div(
+                Eyebrow(t("os_resilience_eyebrow", lang)),
+                Heading(2, t("os_resilience_heading", lang), cls="mt-4 max-w-4xl"),
+                P(t("os_resilience_body1", lang),
+                  cls="mt-8 text-ink-muted text-lg max-w-3xl leading-relaxed mb-6"),
+                P(t("os_resilience_body2", lang),
+                  cls="text-ink-muted text-lg max-w-3xl leading-relaxed"),
+                cls="max-w-4xl",
+            ),
+            cls="border-t border-line bg-bg-elevated/40",
+        ),
+        Section_(
+            Div(
                 Eyebrow("Open-source app suite"),
                 Heading(2, "Open Source Enterprise", cls="mt-4 max-w-3xl"),
                 P(
@@ -753,6 +765,28 @@ def thesis(request: Request):
                 ) for i, (title, body) in enumerate(proposals)],
                 cls="grid md:grid-cols-2 lg:grid-cols-3 gap-5",
             ),
+        ),
+        Section_(
+            Div(
+                Eyebrow(t("resilience_eyebrow", lang)),
+                Heading(2, t("resilience_heading", lang), cls="mt-4 max-w-4xl"),
+                P(t("resilience_lede", lang),
+                  cls="mt-8 text-ink-muted text-lg max-w-3xl leading-relaxed"),
+                cls="mb-12",
+            ),
+            Div(
+                *[Div(
+                    Heading(3, title, cls="mb-3"),
+                    P(body, cls="text-ink-muted text-sm leading-relaxed"),
+                    cls="p-7 rounded-2xl bg-bg-elevated border border-line",
+                ) for title, body in [
+                    (t("resilience_c1_title", lang), t("resilience_c1_body", lang)),
+                    (t("resilience_c2_title", lang), t("resilience_c2_body", lang)),
+                    (t("resilience_c3_title", lang), t("resilience_c3_body", lang)),
+                ]],
+                cls="grid md:grid-cols-3 gap-5",
+            ),
+            cls="border-t border-line",
         ),
         Section_(
             Div(
