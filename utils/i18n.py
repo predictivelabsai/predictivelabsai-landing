@@ -2059,6 +2059,28 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fi": "Aikasarjamallinnus, portfolioanalytiikka ja tutkimustyökalut.",
         "lt": "Laiko eilučių modeliavimas, portfelio analizė ir tyrimų įrankiai.",
     },
+    "team_hk_role": {
+        "en": "AI Product Manager", "et": "AI tootejuht",
+        "de": "KI-Produktmanagerin", "fr": "Cheffe de produit IA",
+        "sv": "AI-produktchef", "lv": "MI produktu vadītāja",
+        "no": "AI-produktsjef", "da": "AI-produktchef",
+        "pl": "Menedżerka produktu AI", "nl": "AI-productmanager",
+        "fi": "Tekoälytuotepäällikkö", "lt": "DI produktų vadovė",
+    },
+    "team_hk_bio": {
+        "en": "AI product and project management with 10+ years across financial services, FinTech and telecom — feature specification, requirements gathering, QA and delivery. Product Manager at Kanvas; earlier Deutsche Bank, UBS, Saxo Bank and Tele2.",
+        "et": "Tehisintellekti toote- ja projektijuhtimine, 10+ aastat finantsteenuste, FinTechi ja telekomi valdkonnas — funktsioonide spetsifitseerimine, nõuete kogumine, QA ja tarne. Tootejuht Kanvases; varem Deutsche Bank, UBS, Saxo Bank ja Tele2.",
+        "de": "KI-Produkt- und Projektmanagement mit über 10 Jahren in Finanzdienstleistungen, FinTech und Telekommunikation — Feature-Spezifikation, Anforderungserhebung, QA und Lieferung. Produktmanagerin bei Kanvas; zuvor Deutsche Bank, UBS, Saxo Bank und Tele2.",
+        "fr": "Gestion de produit et de projet IA avec plus de 10 ans dans les services financiers, la FinTech et les télécoms — spécification de fonctionnalités, recueil des besoins, QA et livraison. Cheffe de produit chez Kanvas ; auparavant Deutsche Bank, UBS, Saxo Bank et Tele2.",
+        "sv": "AI-produkt- och projektledning med över 10 år inom finansiella tjänster, FinTech och telekom — funktionsspecifikation, kravinsamling, QA och leverans. Produktchef på Kanvas; tidigare Deutsche Bank, UBS, Saxo Bank och Tele2.",
+        "lv": "MI produktu un projektu vadība ar 10+ gadu pieredzi finanšu pakalpojumos, FinTech un telekomunikācijās — funkciju specifikācija, prasību apkopošana, QA un piegāde. Produktu vadītāja Kanvas; iepriekš Deutsche Bank, UBS, Saxo Bank un Tele2.",
+        "no": "AI-produkt- og prosjektledelse med over 10 år innen finanstjenester, FinTech og telekom — funksjonsspesifikasjon, kravinnhenting, QA og leveranse. Produktsjef i Kanvas; tidligere Deutsche Bank, UBS, Saxo Bank og Tele2.",
+        "da": "AI-produkt- og projektledelse med over 10 år inden for finansielle tjenester, FinTech og telekom — funktionsspecifikation, kravindsamling, QA og levering. Produktchef hos Kanvas; tidligere Deutsche Bank, UBS, Saxo Bank og Tele2.",
+        "pl": "Zarządzanie produktem i projektami AI z ponad 10-letnim doświadczeniem w usługach finansowych, FinTech i telekomunikacji — specyfikacja funkcji, zbieranie wymagań, QA i dostarczanie. Menedżerka produktu w Kanvas; wcześniej Deutsche Bank, UBS, Saxo Bank i Tele2.",
+        "nl": "AI-product- en projectmanagement met 10+ jaar in financiële dienstverlening, FinTech en telecom — functiespecificatie, requirements, QA en oplevering. Productmanager bij Kanvas; eerder Deutsche Bank, UBS, Saxo Bank en Tele2.",
+        "fi": "Tekoälytuotteiden ja -projektien hallinta, yli 10 vuotta rahoituspalveluissa, FinTechissä ja telekomissa — ominaisuuksien määrittely, vaatimusten keruu, QA ja toimitus. Tuotepäällikkö Kanvasissa; aiemmin Deutsche Bank, UBS, Saxo Bank ja Tele2.",
+        "lt": "DI produktų ir projektų valdymas, 10+ metų finansinių paslaugų, FinTech ir telekomo srityse — funkcijų specifikavimas, reikalavimų rinkimas, QA ir pristatymas. Produktų vadovė Kanvas; anksčiau Deutsche Bank, UBS, Saxo Bank ir Tele2.",
+    },
 
     # ── Solution pillar translations ──────────────────────────
     "sol_def_pillar1_title": {"en": "Satellite & geospatial intelligence", "et": "Satelliit- ja georuumiline luure", "de": "Satelliten- & Geointelligenz", "fr": "Renseignement satellitaire & géospatial", "sv": "Satellit- och geospatial underrättelseinhämtning", "lv": "Satelītu un ģeotelpiskā izlūkošana", "no": "Satellitt- og geospatial etterretning", "da": "Satellit- og geospatial efterretning", "pl": "Wywiad satelitarny i geoprzestrzenny", "nl": "Satelliet- & geospatiale inlichtingen", "fi": "Satelliitti- ja paikkatietoäly", "lt": "Palydovų ir geoprostranstvinė žvalgyba"},
