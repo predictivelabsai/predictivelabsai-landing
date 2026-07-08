@@ -28,6 +28,13 @@ TEAM = [
         "initials": "SF",
     },
     {
+        "name": "Helen Kaljuvee",
+        "role": "AI Product Manager",
+        "bio": "Product strategy for AI and machine-learning products — roadmap definition, discovery and user research, and cross-functional delivery. Translates model capabilities into shipped features, from problem framing through go-to-market.",
+        "linkedin": "https://www.linkedin.com/in/helen-kaljuvee/",
+        "initials": "HK",
+    },
+    {
         "name": "Chenhao Xue",
         "role": "Quantitative Research Consultant",
         "bio": "Time-series modelling, portfolio analytics, and research tooling.",
