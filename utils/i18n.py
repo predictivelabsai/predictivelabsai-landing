@@ -2037,6 +2037,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fi": "Agenttiset järjestelmät, hakuputkistot ja LLM:n tuotantokäyttöönotto.",
         "lt": "Agentinės sistemos, paieškos srautai ir LLM diegimas gamyboje.",
     },
+    "team_rl_role": {"en": "AI Engineer & Director"},
+    "team_rl_bio": {"en": "Data analysis and inference engineering. Economist and data scientist — BSc Economics with a Data Science minor and MSc Economics & Data Science, Tilburg University. AI Software Developer at Franklin | The DNA of Buildings, building AI and data-analytics systems. Based in Tallinn."},
     "team_cx_role": {
         "en": "Quantitative Research Consultant", "et": "Kvantitatiivse uurimistöö konsultant",
         "de": "Berater für quantitative Forschung", "fr": "Consultant en recherche quantitative",

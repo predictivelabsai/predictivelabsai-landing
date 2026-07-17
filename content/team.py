@@ -28,6 +28,13 @@ TEAM = [
         "initials": "SF",
     },
     {
+        "name": "Richard Henry Lao",
+        "role": "AI Engineer & Director",
+        "bio": "Data analysis and inference engineering. Economist and data scientist — BSc Economics with a Data Science minor and MSc Economics & Data Science, Tilburg University. AI Software Developer at Franklin | The DNA of Buildings, building AI and data-analytics systems. Based in Tallinn.",
+        "linkedin": "https://www.linkedin.com/in/richard-henry-lao-01589826b/",
+        "initials": "RL",
+    },
+    {
         "name": "Helen Kaljuvee",
         "role": "AI Product Manager",
         "bio": "Product strategy for AI and machine-learning products — roadmap definition, discovery and user research, and cross-functional delivery. Translates model capabilities into shipped features, from problem framing through go-to-market.",
