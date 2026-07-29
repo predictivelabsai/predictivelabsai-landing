@@ -42,6 +42,13 @@ TEAM = [
         "initials": "HK",
     },
     {
+        "name": "Stanislav Klevtsov",
+        "role": "AI Product Manager",
+        "bio": "Fintech product manager, business and data analyst, and certified Salesforce consultant with 9+ years across financial services and startups in Estonia and New Zealand. Former Product Manager / Business Analyst at EstateGuru, with expertise in banking systems, crowdfunding platforms, automation, financial analysis, and cross-functional delivery.",
+        "linkedin": "https://www.linkedin.com/in/stanislavklevtsov/",
+        "initials": "SK",
+    },
+    {
         "name": "Chenhao Xue",
         "role": "Quantitative Research Consultant",
         "bio": "Time-series modelling, portfolio analytics, and research tooling.",
