@@ -49,6 +49,13 @@ TEAM = [
         "initials": "SK",
     },
     {
+        "name": "Karola Rianne Mahhova-Reinholm",
+        "role": "Chief Marketing Officer",
+        "bio": "CMO at Tendly and a creative strategist working across brand identity, digital marketing, and UX/UI. Turns complex ideas into clear, conversion-focused experiences, combining inventive design with structured delivery for startups and growing companies. Former CMO at Kanvas.ai.",
+        "linkedin": "https://www.linkedin.com/in/karola-rianne/",
+        "initials": "KM",
+    },
+    {
         "name": "Chenhao Xue",
         "role": "Quantitative Research Consultant",
         "bio": "Time-series modelling, portfolio analytics, and research tooling.",
