@@ -66,7 +66,7 @@ layout.
 ## Legal entities
 
 `content/company.py` is the single source for the six Predictive Labs legal
-entities rendered in the footer credentials table and on `/contact`.
+entities rendered in EMEA, Americas and APAC footer tables and on `/contact`.
 
 ## Architecture
 

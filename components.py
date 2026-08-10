@@ -13,7 +13,7 @@ from fasthtml.common import (
     Video, Source, Table, Thead, Tbody, Tr, Th, Td,
 )
 
-from content.company import LEGAL_ENTITIES
+from content.company import LEGAL_ENTITIES, LEGAL_REGIONS
 from utils.i18n import t, LANGUAGES, DEFAULT_LANG
 
 SITE_NAME = "Predictive Labs"
@@ -329,31 +329,45 @@ def Footer_(lang: str = "en"):
                 cls="grid grid-cols-2 md:grid-cols-4 gap-10",
             ),
             Div(
-                Table(
-                    Thead(
-                        Tr(
-                            Th(t("footer_market", lang), scope="col", cls="w-[18%] px-4 py-3 text-left"),
-                            Th(t("footer_legal_entity", lang), scope="col", cls="w-[36%] px-4 py-3 text-left"),
-                            Th(t("footer_registered_address", lang), scope="col", cls="px-4 py-3 text-left"),
+                *[
+                    Div(
+                        Div(
+                            H4(region.upper(), cls="font-mono text-xs tracking-[0.18em] uppercase text-accent"),
+                            Div(cls="h-px grow bg-line"),
+                            cls="mb-2 flex items-center gap-4",
                         ),
-                        cls="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted",
-                    ),
-                    Tbody(
-                        *[
-                            Tr(
-                                Td(entity["market"], cls="px-4 py-3 font-medium text-ink"),
-                                Td(entity["entity"], cls="px-4 py-3 text-ink-muted"),
-                                Td(entity["address"], cls="px-4 py-3 text-ink-muted"),
-                                cls="border-t border-line",
-                            )
-                            for entity in LEGAL_ENTITIES
-                        ],
-                        cls="text-xs leading-5",
-                    ),
-                    cls="w-full min-w-[780px] border-collapse",
-                    aria_label=t("footer_legal_entities", lang),
-                ),
-                cls="mt-10 overflow-x-auto rounded-xl border border-line bg-bg/25",
+                        Div(
+                            Table(
+                                Thead(
+                                    Tr(
+                                        Th(t("footer_market", lang), scope="col", cls="w-[18%] px-4 py-3 text-left"),
+                                        Th(t("footer_legal_entity", lang), scope="col", cls="w-[36%] px-4 py-3 text-left"),
+                                        Th(t("footer_registered_address", lang), scope="col", cls="px-4 py-3 text-left"),
+                                    ),
+                                    cls="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted",
+                                ),
+                                Tbody(
+                                    *[
+                                        Tr(
+                                            Td(entity["market"], cls="px-4 py-3 font-medium text-ink"),
+                                            Td(entity["entity"], cls="px-4 py-3 text-ink-muted"),
+                                            Td(entity["address"], cls="px-4 py-3 text-ink-muted"),
+                                            cls="border-t border-line",
+                                        )
+                                        for entity in LEGAL_ENTITIES
+                                        if entity["region"] == region
+                                    ],
+                                    cls="text-xs leading-5",
+                                ),
+                                cls="w-full min-w-[780px] border-collapse",
+                                aria_label=f'{t("footer_legal_entities", lang)} — {region}',
+                            ),
+                            cls="overflow-x-auto rounded-xl border border-line bg-bg/25",
+                        ),
+                    )
+                    for region in LEGAL_REGIONS
+                ],
+                cls="mt-10 space-y-5",
             ),
             Div(
                 Div(f"© {__import__('datetime').datetime.now().year} Predictive Labs Ltd.", cls="text-ink-dim text-xs"),
