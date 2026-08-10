@@ -115,6 +115,8 @@ def test_partners_page_lists_six_external_partners(server):
         tendly = cards.filter(has_text="Tendly")
         assert tendly.get_by_role("link", name="Visit website").get_attribute("href") == "https://tendly.eu/"
         assert tendly.get_by_role("img", name="Tendly logo").get_attribute("src") == "/static/partners/tendly.svg"
+        assert tendly.get_by_text("AI-driven tender discovery, management and bidding in 23+ national and 100+ local procurement markets globally with tools match, score and draft bids.", exact=True).count() == 1
+        assert tendly.get_by_text("TED", exact=False).count() == 0
 
         browser.close()
 

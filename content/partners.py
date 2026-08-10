@@ -35,6 +35,6 @@ PARTNERS = (
         "name": "Tendly",
         "url": "https://tendly.eu/",
         "logo": "/static/partners/tendly.svg",
-        "description": "AI tender management across 23 national procurement markets and TED, with tools to match, score and draft bids.",
+        "description": "AI-driven tender discovery, management and bidding in 23+ national and 100+ local procurement markets globally with tools match, score and draft bids.",
     },
 )
