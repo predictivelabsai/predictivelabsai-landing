@@ -100,18 +100,21 @@ def test_route(server, path, slug, expected):
         browser.close()
 
 
-def test_partners_page_lists_five_external_partners(server):
+def test_partners_page_lists_six_external_partners(server):
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 1440, "height": 900})
         page.goto(server + "/partners", wait_until="networkidle")
 
         cards = page.locator("main article")
-        assert cards.count() == 5
+        assert cards.count() == 6
         assert cards.filter(has_text="Predictive Labs").count() == 0
         assert page.locator("nav ul").first.get_by_role("link", name="Partners").count() == 1
         assert cards.filter(has_text="SAASPASS").get_by_role("link", name="Visit website").get_attribute("href") == "https://saaspass.com/"
         assert cards.filter(has_text="Manmouna Technologies").get_by_role("link", name="Visit website").get_attribute("href") == "https://manmouna.tech/"
+        tendly = cards.filter(has_text="Tendly")
+        assert tendly.get_by_role("link", name="Visit website").get_attribute("href") == "https://tendly.eu/"
+        assert tendly.get_by_role("img", name="Tendly logo").get_attribute("src") == "/static/partners/tendly.svg"
 
         browser.close()
 

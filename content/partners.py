@@ -31,4 +31,10 @@ PARTNERS = (
         "logo": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230B1E14'/%3E%3Cpath d='M32 12 52 32 32 52 12 32Z' fill='%2334D399'/%3E%3Cpath d='M32 22 42 32 32 42 22 32Z' fill='%230B1E14'/%3E%3C/svg%3E",
         "description": "Auditable-by-design AI systems for European public services across health, defence, public management and mobility.",
     },
+    {
+        "name": "Tendly",
+        "url": "https://tendly.eu/",
+        "logo": "/static/partners/tendly.svg",
+        "description": "AI tender management across 23 national procurement markets and TED, with tools to match, score and draft bids.",
+    },
 )
