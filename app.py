@@ -15,12 +15,14 @@ from fasthtml.common import (
 
 from components import (
     page, Hero, Pillar, MetricTile, CaseStudyCard, CTASection, NewsSection,
-    Section_, Heading, Eyebrow, Pill, Button_, SectorLink,
+    Section_, Heading, Eyebrow, Pill, Button_, SectorLink, PartnerCard,
     CONTACT_EMAIL, GITHUB_URL, LINKEDIN_URL,
 )
 from content.case_studies import ALL as ALL_CASES, BID_DERIVED, NAMED_PRECEDENTS
 from content.team import TEAM
 from content.repos import REPOS, EXTERNAL_RESEARCH, APP_SUITE
+from content.partners import PARTNERS
+from content.company import LEGAL_ENTITIES
 from content import signal as signal_mod
 from content import news as news_mod
 from utils.i18n import t, get_lang, set_lang
@@ -669,6 +671,36 @@ def open_source(request: Request):
     )
 
 
+# ---------- /partners ----------
+
+@rt("/partners")
+def partners(request: Request):
+    lang = _lang(request)
+    return page(
+        t("nav_partners", lang),
+        "/partners",
+        Section_(
+            Eyebrow(t("partners_eyebrow", lang)),
+            Heading(1, t("partners_headline", lang), cls="mt-5 max-w-5xl"),
+            P(
+                t("partners_lede", lang),
+                cls="mt-8 text-xl text-ink-muted max-w-3xl leading-relaxed",
+            ),
+            cls="pt-24",
+        ),
+        Section_(
+            Div(
+                *[PartnerCard(partner, lang=lang) for partner in PARTNERS],
+                cls="grid gap-5 md:grid-cols-2 lg:grid-cols-3",
+            ),
+            P(t("partners_note", lang), cls="mt-8 text-xs leading-5 text-ink-dim"),
+            cls="border-t border-line bg-bg-elevated/40",
+        ),
+        CTASection(lang=lang),
+        lang=lang,
+    )
+
+
 # ---------- /team ----------
 
 @rt("/team")
@@ -841,60 +873,15 @@ def contact(request: Request):
                     cls="p-10 rounded-2xl bg-bg-elevated border border-line",
                 ),
                 Div(
-                    Div(
-                        H3(t("contact_reg_office", lang), cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
-                        P("Predictive Labs Ltd", cls="text-ink"),
-                        P("155 Minories Street, Suite 275", cls="text-ink-muted"),
-                        P("London, EC3N 1AD", cls="text-ink-muted"),
-                        P("United Kingdom", cls="text-ink-muted"),
-                        P("Company no. 14857334", cls="text-ink-dim text-sm mt-3 font-mono"),
-                        cls="mb-10",
-                    ),
-                    Div(
-                        H3(t("contact_lt_entity", lang), cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
-                        P("Predictive Labs, UAB", cls="text-ink"),
-                        P("Medeinos g. 35-70", cls="text-ink-muted"),
-                        P("Vilnius, LT-06137", cls="text-ink-muted"),
-                        P("Lithuania", cls="text-ink-muted"),
-                        P("Reg. code 307863496", cls="text-ink-dim text-sm mt-3 font-mono"),
-                        cls="mb-10",
-                    ),
-                    Div(
-                        H3(t("contact_ee_entity", lang), cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
-                        P("Predictive Labs OÜ", cls="text-ink"),
-                        P("Karsti 3", cls="text-ink-muted"),
-                        P("Tallinn, 11625", cls="text-ink-muted"),
-                        P("Estonia", cls="text-ink-muted"),
-                        P("Registry code 12061679", cls="text-ink-dim text-sm mt-3 font-mono"),
-                        cls="mb-10",
-                    ),
-                    Div(
-                        H3(t("contact_ee_entity_2", lang), cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
-                        P("Manmouna OÜ", cls="text-ink"),
-                        P("Teelise tn 10, Nõmme linnaosa", cls="text-ink-muted"),
-                        P("10916 Tallinn, Harju maakond", cls="text-ink-muted"),
-                        P("Estonia", cls="text-ink-muted"),
-                        P("Registry code 16289310", cls="text-ink-dim text-sm mt-3 font-mono"),
-                        cls="mb-10",
-                    ),
-                    Div(
-                        H3("Canada", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
-                        P("Predictive Labs Inc.", cls="text-ink"),
-                        P("155 East Beaver Creek Road, Suite 24-147", cls="text-ink-muted"),
-                        P("Richmond Hill, Ontario, L4B 2N1", cls="text-ink-muted"),
-                        P("Canada", cls="text-ink-muted"),
-                        P("OCN 1001679945", cls="text-ink-dim text-sm mt-3 font-mono"),
-                        cls="mb-10",
-                    ),
-                    Div(
-                        H3("United States", cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
-                        P("Predictive Labs LLC", cls="text-ink"),
-                        P("1331 Grand Street, Suite 607", cls="text-ink-muted"),
-                        P("Hoboken, NJ 07030", cls="text-ink-muted"),
-                        P("United States", cls="text-ink-muted"),
-                        P("ID 2025-001721250", cls="text-ink-dim text-sm mt-3 font-mono"),
-                        cls="mb-10",
-                    ),
+                    *[
+                        Div(
+                            H3(entity["market"], cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
+                            P(entity["entity"], cls="text-ink"),
+                            P(entity["address"], cls="text-ink-muted mt-1"),
+                            cls="mb-10",
+                        )
+                        for entity in LEGAL_ENTITIES
+                    ],
                     Div(
                         H3(t("contact_channels", lang), cls="text-sm font-mono tracking-widest uppercase text-ink-muted mb-3"),
                         A("GitHub", href=GITHUB_URL, target="_blank", cls="block text-ink hover:text-accent mb-2"),

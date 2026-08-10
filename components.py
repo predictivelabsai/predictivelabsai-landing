@@ -10,9 +10,10 @@ from fasthtml.common import (
     Html, Head, Body, Meta, Title, Link, Script, Style, NotStr,
     Nav, Main, Footer, Header, Section, Article, Aside, Div, Span, A, Img, Svg,
     H1, H2, H3, H4, H5, H6, P, Ul, Ol, Li, Button, Small, Strong, Em, I,
-    Video, Source,
+    Video, Source, Table, Thead, Tbody, Tr, Th, Td,
 )
 
+from content.company import LEGAL_ENTITIES
 from utils.i18n import t, LANGUAGES, DEFAULT_LANG
 
 SITE_NAME = "Predictive Labs"
@@ -36,6 +37,7 @@ def _nav_items(lang: str = "en"):
         (t("nav_research", lang), "/open-source"),
         (t("nav_thesis", lang), "/thesis"),
         (t("nav_team", lang), "/team"),
+        (t("nav_partners", lang), "/partners"),
         (t("nav_contact", lang), "/contact"),
     ]
 
@@ -229,7 +231,7 @@ def Navbar(current_path: str = "/", lang: str = "en"):
             ),
             Ul(
                 *[_nav_item(i) for i in items],
-                cls="hidden lg:flex items-center gap-7",
+                cls="hidden lg:flex items-center gap-5 xl:gap-7",
             ),
             Div(
                 _lang_dropdown(lang),
@@ -292,6 +294,7 @@ def Footer_(lang: str = "en"):
         ]),
         (t("footer_company", lang), [
             (t("nav_team", lang), "/team"),
+            (t("nav_partners", lang), "/partners"),
             (t("nav_thesis", lang), "/thesis"),
             (t("nav_contact", lang), "/contact"),
             ("GitHub", GITHUB_URL),
@@ -321,57 +324,36 @@ def Footer_(lang: str = "en"):
                         cls="flex items-center text-lg mb-4",
                     ),
                     P(t("footer_tagline", lang), cls="text-ink-muted text-sm max-w-xs mb-5 leading-relaxed"),
-                    P(
-                        "United Kingdom", NotStr("<br>"),
-                        "Predictive Labs Ltd", NotStr("<br>"),
-                        "Co. 14857334", NotStr("<br>"),
-                        "155 Minories Street, Suite 275", NotStr("<br>"),
-                        "London, EC3N 1AD",
-                        cls="text-ink-dim text-xs leading-relaxed mb-3",
-                    ),
-                    P(
-                        "Lithuania", NotStr("<br>"),
-                        "Predictive Labs, UAB", NotStr("<br>"),
-                        "Reg. 307863496", NotStr("<br>"),
-                        "Medeinos g. 35-70", NotStr("<br>"),
-                        "Vilnius, LT-06137",
-                        cls="text-ink-dim text-xs leading-relaxed mb-3",
-                    ),
-                    P(
-                        "Estonia", NotStr("<br>"),
-                        "Predictive Labs OÜ", NotStr("<br>"),
-                        "Registry code 12061679", NotStr("<br>"),
-                        "Karsti 3", NotStr("<br>"),
-                        "Tallinn, 11625",
-                        cls="text-ink-dim text-xs leading-relaxed mb-3",
-                    ),
-                    P(
-                        "Estonia", NotStr("<br>"),
-                        "Manmouna OÜ", NotStr("<br>"),
-                        "Registry code 16289310", NotStr("<br>"),
-                        "Teelise tn 10, Nõmme linnaosa", NotStr("<br>"),
-                        "10916 Tallinn, Harju maakond",
-                        cls="text-ink-dim text-xs leading-relaxed mb-3",
-                    ),
-                    P(
-                        "Canada", NotStr("<br>"),
-                        "Predictive Labs Inc.", NotStr("<br>"),
-                        "OCN 1001679945", NotStr("<br>"),
-                        "155 East Beaver Creek Road, Suite 24-147", NotStr("<br>"),
-                        "Richmond Hill, Ontario, L4B 2N1",
-                        cls="text-ink-dim text-xs leading-relaxed mb-3",
-                    ),
-                    P(
-                        "United States", NotStr("<br>"),
-                        "Predictive Labs LLC", NotStr("<br>"),
-                        "ID 2025-001721250", NotStr("<br>"),
-                        "1331 Grand Street, Suite 607", NotStr("<br>"),
-                        "Hoboken, NJ 07030",
-                        cls="text-ink-dim text-xs leading-relaxed",
-                    ),
                 ),
                 *col_divs,
                 cls="grid grid-cols-2 md:grid-cols-4 gap-10",
+            ),
+            Div(
+                Table(
+                    Thead(
+                        Tr(
+                            Th(t("footer_market", lang), scope="col", cls="w-[18%] px-4 py-3 text-left"),
+                            Th(t("footer_legal_entity", lang), scope="col", cls="w-[36%] px-4 py-3 text-left"),
+                            Th(t("footer_registered_address", lang), scope="col", cls="px-4 py-3 text-left"),
+                        ),
+                        cls="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted",
+                    ),
+                    Tbody(
+                        *[
+                            Tr(
+                                Td(entity["market"], cls="px-4 py-3 font-medium text-ink"),
+                                Td(entity["entity"], cls="px-4 py-3 text-ink-muted"),
+                                Td(entity["address"], cls="px-4 py-3 text-ink-muted"),
+                                cls="border-t border-line",
+                            )
+                            for entity in LEGAL_ENTITIES
+                        ],
+                        cls="text-xs leading-5",
+                    ),
+                    cls="w-full min-w-[780px] border-collapse",
+                    aria_label=t("footer_legal_entities", lang),
+                ),
+                cls="mt-10 overflow-x-auto rounded-xl border border-line bg-bg/25",
             ),
             Div(
                 Div(f"© {__import__('datetime').datetime.now().year} Predictive Labs Ltd.", cls="text-ink-dim text-xs"),
@@ -421,6 +403,31 @@ def page(title: str, current_path: str = "/", *content, head_extra=None, body_ex
         Head(*head_children),
         Body(*body_children, cls="bg-bg text-ink font-sans antialiased"),
         lang=lang,
+    )
+
+
+def PartnerCard(partner, *, lang="en"):
+    return Article(
+        Div(
+            Img(
+                src=partner["logo"],
+                alt=f'{partner["name"]} logo',
+                loading="lazy",
+                cls="h-12 w-12 object-contain",
+            ),
+            Pill(t("partners_label", lang)),
+            cls="flex items-center justify-between gap-4",
+        ),
+        Heading(3, partner["name"], cls="mt-6"),
+        P(partner["description"], cls="mt-3 grow text-sm leading-6 text-ink-muted"),
+        A(
+            t("partners_visit", lang) + " ↗",
+            href=partner["url"],
+            target="_blank",
+            rel="noopener noreferrer",
+            cls="mt-6 inline-flex text-sm font-medium text-accent hover:text-ink transition-colors",
+        ),
+        cls="flex h-full flex-col rounded-2xl border border-line bg-bg-elevated p-7 transition-all duration-200 hover:-translate-y-1 hover:border-accent/60",
     )
 
 

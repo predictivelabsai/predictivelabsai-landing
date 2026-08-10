@@ -39,6 +39,7 @@ ROUTES = [
     ("/case-studies", "case-studies", "Engagements"),
     ("/signal", "signal", "Public-sector data"),
     ("/open-source", "open-source", "commons"),
+    ("/partners", "partners", "Specialists"),
     ("/team", "team", "small group"),
     ("/contact", "contact", "programme"),
 ]
@@ -58,7 +59,10 @@ def _wait_for_port(host: str, port: int, timeout: float = 15.0):
 
 @pytest.fixture(scope="session")
 def server():
-    env_cmd = [".venv/bin/python", "-c", f"import os; os.environ.setdefault('PORT','{PORT}'); import main; main.serve(port={PORT})"]
+    env_cmd = [
+        ".venv/bin/python", "-m", "uvicorn", "app:app",
+        "--host", HOST, "--port", str(PORT),
+    ]
     proc = subprocess.Popen(
         env_cmd,
         cwd=ROOT,
@@ -93,4 +97,39 @@ def test_route(server, path, slug, expected):
         assert expected.lower() in h1_text.lower(), f"{path}: h1 '{h1_text}' does not contain '{expected}'"
 
         page.screenshot(path=str(SCREENSHOTS / f"test-{slug}.png"), full_page=True)
+        browser.close()
+
+
+def test_partners_page_lists_five_external_partners(server):
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 1440, "height": 900})
+        page.goto(server + "/partners", wait_until="networkidle")
+
+        cards = page.locator("main article")
+        assert cards.count() == 5
+        assert cards.filter(has_text="Predictive Labs").count() == 0
+        assert page.locator("nav ul").first.get_by_role("link", name="Partners").count() == 1
+        assert cards.filter(has_text="SAASPASS").get_by_role("link", name="Visit website").get_attribute("href") == "https://saaspass.com/"
+        assert cards.filter(has_text="Manmouna Technologies").get_by_role("link", name="Visit website").get_attribute("href") == "https://manmouna.tech/"
+
+        browser.close()
+
+
+def test_footer_lists_six_predictive_labs_entities(server):
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 1440, "height": 900})
+        page.goto(server + "/contact", wait_until="networkidle")
+
+        table = page.get_by_role("table", name="Predictive Labs legal entities")
+        assert table.locator("tbody tr").count() == 6
+        assert table.get_by_text("Manmouna", exact=False).count() == 0
+        assert table.get_by_text("Predictive Labs OÜ · Registry 12061679", exact=True).count() == 1
+        assert table.get_by_text("Ravala 6, Tallinn", exact=True).count() == 1
+        assert table.get_by_text("Predictive Labs Limited · Co. 9448513 · NZBN 9429053855695", exact=True).count() == 1
+        assert page.locator("main").get_by_text("Manmouna", exact=False).count() == 0
+        assert page.locator("main").get_by_text("Ravala 6, Tallinn", exact=True).count() == 1
+        assert page.locator("main").get_by_text("New Zealand", exact=True).count() == 1
+
         browser.close()

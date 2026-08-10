@@ -19,6 +19,7 @@ is vanilla JS.
 | `/case-studies` | Engagements & named precedents (`content/case_studies.py`) |
 | `/signal` | Public-sector data visualisations (Plotly) |
 | `/open-source` | Open-source ethos + toolkit cards (`content/repos.py`); `/research` 301-redirects here |
+| `/partners` | Five integration partners (`content/partners.py`) in a responsive 2×3 card matrix |
 | `/thesis` | Digital-sovereignty thesis; links the EC Open Source Strategy |
 | `/team` | Team bios (`content/team.py`) |
 | `/contact` | Contact / programme enquiry |
@@ -54,6 +55,18 @@ The `/open-source` page renders one card per entry in `content/repos.py`
 `github.com/predictivelabsai/*` demonstrator, plus external research platforms
 (`EXTERNAL_RESEARCH`). Add a repo by appending a dict; the card appears on next
 deploy.
+
+## Integration partners
+
+The `/partners` page renders five external organisations from
+`content/partners.py`. Predictive Labs itself is intentionally excluded; cards
+link to each partner's public website and use a three-column, two-row desktop
+layout.
+
+## Legal entities
+
+`content/company.py` is the single source for the six Predictive Labs legal
+entities rendered in the footer credentials table and on `/contact`.
 
 ## Architecture
 
