@@ -390,6 +390,7 @@ def page(title: str, current_path: str = "/", *content, head_extra=None, body_ex
         Meta(charset="utf-8"),
         Meta(name="viewport", content="width=device-width, initial-scale=1"),
         Meta(name="description", content=f"{SITE_NAME} — {SITE_TAGLINE}"),
+        Meta(name="google-site-verification", content="lEviA9tQLhOCOhLLeh9rlDKuQzu2gFn7tZEuVCRa9sE"),
         Title(f"{title} · {SITE_NAME}"),
         Link(rel="preconnect", href="https://fonts.googleapis.com"),
         Link(rel="preconnect", href="https://fonts.gstatic.com", crossorigin=""),
