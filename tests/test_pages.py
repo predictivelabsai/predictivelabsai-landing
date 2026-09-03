@@ -137,6 +137,10 @@ def test_footer_groups_six_predictive_labs_entities_by_region(server):
         assert americas.locator("tbody tr").count() == 2
         assert apac.locator("tbody tr").count() == 1
         assert footer.get_by_text("Manmouna", exact=False).count() == 0
+        assert emea.get_by_text(
+            "Predictive Labs Ltd · Co. 14857334 · D-U-N-S© Number: 230619730",
+            exact=True,
+        ).count() == 1
         assert emea.get_by_text("Predictive Labs OÜ · Registry 12061679", exact=True).count() == 1
         assert emea.get_by_text("Ravala 6, Tallinn", exact=True).count() == 1
         assert apac.get_by_text("Predictive Labs Limited · Co. 9448513 · NZBN 9429053855695", exact=True).count() == 1

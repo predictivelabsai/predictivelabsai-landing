@@ -6,7 +6,7 @@ LEGAL_ENTITIES = (
     {
         "region": "EMEA",
         "market": "United Kingdom",
-        "entity": "Predictive Labs Ltd · Co. 14857334",
+        "entity": "Predictive Labs Ltd · Co. 14857334 · D-U-N-S© Number: 230619730",
         "address": "155 Minories Street, Suite 275, London EC3N 1AD",
     },
     {
