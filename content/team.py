@@ -49,6 +49,13 @@ TEAM = [
         "initials": "SK",
     },
     {
+        "name": "Daniel Raissar",
+        "role": "AI Product Manager",
+        "bio": "Co-founder of Tendly, an AI-powered public-tender platform helping SMEs discover, analyse, and win EU procurement opportunities. Leads product strategy for tender matching, competitor intelligence, risk analysis, and bid-document generation, drawing on senior product and operations experience building AI-agent and multi-model workflow platforms.",
+        "linkedin": "https://www.linkedin.com/in/danielraissar/",
+        "initials": "DR",
+    },
+    {
         "name": "Karola Rianne Mahhova-Reinholm",
         "role": "Chief Marketing Officer",
         "bio": "CMO at Tendly and a creative strategist working across brand identity, digital marketing, and UX/UI. Turns complex ideas into clear, conversion-focused experiences, combining inventive design with structured delivery for startups and growing companies. Former CMO at Kanvas.ai.",
