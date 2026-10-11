@@ -82,6 +82,17 @@ _LT = {
 CONTENT: dict[str, dict[str, str]] = {"lt": _LT}
 
 
+def _load() -> None:
+    import json
+    from pathlib import Path
+    data = json.loads((Path(__file__).parent / "locales" / "content.json").read_text(encoding="utf-8"))
+    for lang, table in data.items():
+        CONTENT.setdefault(lang, {}).update(table)
+
+
+_load()
+
+
 def tc(text: str, lang: str = "en") -> str:
     if not text or lang == "en":
         return text

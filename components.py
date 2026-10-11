@@ -153,12 +153,12 @@ def _lang_dropdown(lang: str = "en"):
         for code, info in LANGUAGES.items()
     ]
     # Domain switch: explicit, persistent (?stay=1 sets pl_stay so geo never bounces you back).
-    if lang == "lt":
-        options.append(A("predictivelabs.ai · English ↗", href="https://predictivelabs.ai/?stay=1",
-                         cls="block mt-1 border-t border-line px-2.5 pt-2 pb-1.5 text-xs text-ink-muted hover:text-accent"))
-    else:
-        options.append(A("predictivelabs.lt · Lietuvių ↗", href="https://predictivelabs.lt/",
-                         cls="block mt-1 border-t border-line px-2.5 pt-2 pb-1.5 text-xs text-ink-muted hover:text-accent"))
+    _dl = "block px-2.5 py-1 text-xs text-ink-muted hover:text-accent"
+    links = [("predictivelabs.ai · English", "https://predictivelabs.ai/?stay=1"),
+             ("predictivelabs.lt · Lietuvių", "https://predictivelabs.lt/"),
+             ("predictivelabs.ee · Eesti", "https://predictivelabs.ee/")]
+    options.append(Div(*[A(label + " ↗", href=href, cls=_dl) for label, href in links],
+                       cls="mt-1 border-t border-line pt-1.5"))
     return Div(
         Button(
             current["flag"],

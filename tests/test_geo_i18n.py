@@ -42,7 +42,7 @@ def test_lt_domain_serves_lithuanian_and_never_redirects():
 
 
 def test_ai_english_for_other_countries():
-    for c in ("US", "GB", "DE", None):
+    for c in ("US", "GB", None):
         r = get("predictivelabs.ai", "/", c)
         assert r.status_code == 200 and '<html lang="en"' in r.text
 
@@ -98,3 +98,33 @@ def test_static_and_post_not_redirected():
 def test_all_pages_render_lt(path):
     r = get("predictivelabs.lt", path)
     assert r.status_code == 200 and '<html lang="lt"' in r.text
+
+
+def test_ee_visitor_redirects_and_ee_domain_estonian():
+    r = get("predictivelabs.ai", "/", "EE")
+    assert r.status_code == 302 and r.headers["location"] == "https://predictivelabs.ee/"
+    r = get("predictivelabs.ee", "/", "US")
+    assert r.status_code == 200 and '<html lang="et"' in r.text and "Predictive Labs OÜ" in r.text
+
+
+@pytest.mark.parametrize("cc,lang", [("DE", "de"), ("AT", "de"), ("FR", "fr"), ("PT", "pt"), ("ES", "es"), ("PL", "pl"),
+                                     ("FI", "fi"), ("SE", "sv"), ("NO", "no"), ("DK", "da"), ("LV", "lv"),
+                                     ("GB", "en"), ("US", "en")])
+def test_countries_without_cctld_get_locale_on_ai(cc, lang):
+    r = get("predictivelabs.ai", "/", cc)
+    assert r.status_code == 200 and f'<html lang="{lang}"' in r.text
+
+
+def test_hreflang_lists_all_languages():
+    r = get("predictivelabs.ai", "/team")
+    for code, href in [("de", "https://predictivelabs.ai/team?lang=de"), ("et", "https://predictivelabs.ee/team"),
+                       ("nb", "https://predictivelabs.ai/team?lang=no"), ("es", "https://predictivelabs.ai/team?lang=es")]:
+        assert f'hreflang="{code}" href="{href}"' in r.text
+    r = get("predictivelabs.ai", "/team?lang=de", "US")
+    assert '<link rel="canonical" href="https://predictivelabs.ai/team?lang=de">' in r.text
+
+
+@pytest.mark.parametrize("lang", ["et", "lv", "fi", "sv", "no", "da", "de", "fr", "pt", "es", "pl"])
+def test_every_language_renders_home(lang):
+    r = get("predictivelabs.ai", f"/open-source?lang={lang}")
+    assert r.status_code == 200 and f'<html lang="{lang}"' in r.text

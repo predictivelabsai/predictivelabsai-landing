@@ -25,13 +25,15 @@ LANGUAGES: dict[str, dict] = {
     "nl": {"name": "Dutch",      "native": "Nederlands", "flag": "\U0001f1f3\U0001f1f1"},
     "fi": {"name": "Finnish",    "native": "Suomi",      "flag": "\U0001f1eb\U0001f1ee"},
     "lt": {"name": "Lithuanian", "native": "Lietuvių",  "flag": "\U0001f1f1\U0001f1f9"},
+    "pt": {"name": "Portuguese", "native": "Português", "flag": "\U0001f1f5\U0001f1f9"},
+    "es": {"name": "Spanish",    "native": "Español",    "flag": "\U0001f1ea\U0001f1f8"},
 }
 
 SUPPORTED_LANGS = set(LANGUAGES.keys())
 
 # Languages advertised via hreflang / auto-selected by geo. Others stay
 # reachable from the switcher but are not pushed to visitors yet.
-PUBLISHED_LANGS = ("en", "lt")
+PUBLISHED_LANGS = ("en", "lt", "et", "lv", "fi", "sv", "no", "da", "de", "fr", "pt", "es", "pl")
 
 
 def detect_language(request) -> str:
@@ -3426,3 +3428,22 @@ _LT_REVISIONS: dict[str, str] = {
 for _k, _v in _LT_REVISIONS.items():
     if _k in TRANSLATIONS:
         TRANSLATIONS[_k]["lt"] = _v
+
+
+# ---------------------------------------------------------------------------
+# Portuguese + Spanish catalogs and late additions (utils/locales/catalog_extra.json)
+# ---------------------------------------------------------------------------
+def _load_extra() -> None:
+    import json
+    from pathlib import Path
+    data = json.loads((Path(__file__).parent / "locales" / "catalog_extra.json").read_text(encoding="utf-8"))
+    for lang in ("pt", "es"):
+        for key, val in data.get(lang, {}).items():
+            if key in TRANSLATIONS:
+                TRANSLATIONS[key][lang] = val
+    for key, per_lang in data.get("_extra", {}).items():
+        if key in TRANSLATIONS:
+            TRANSLATIONS[key].update(per_lang)
+
+
+_load_extra()

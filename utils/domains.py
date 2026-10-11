@@ -20,8 +20,7 @@ X_DEFAULT = "predictivelabs.ai"
 # suffix after "predictivelabs." -> default lang (None = generic, detect by geo)
 DOMAIN_TABLE: dict[str, str | None] = {
     "ai": None, "eu": None, "com": None,
-    "lt": "lt", "ee": None,  # et once Estonian is published (phase 2)
-    "co.uk": "en", "uk": "en",
+    "lt": "lt", "ee": "et", "co.uk": "en", "uk": "en",
     # ready if registered later
     "lv": "lv", "fi": "fi", "se": "sv", "no": "no", "dk": "da", "de": "de",
     "fr": "fr", "pt": "pt", "es": "es", "pl": "pl", "nl": "nl",
@@ -31,7 +30,7 @@ DOMAIN_TABLE: dict[str, str | None] = {
 DEFAULT_LIVE = ("predictivelabs.ai", "predictivelabs.lt", "predictivelabs.ee", "predictivelabs.eu", "predictivelabs.co.uk")
 
 # Country -> ccTLD host for the one-time geo redirect from generic domains.
-DEFAULT_GEO_REDIRECT = {"lt": "predictivelabs.lt"}
+DEFAULT_GEO_REDIRECT = {"lt": "predictivelabs.lt", "ee": "predictivelabs.ee"}
 
 # Domains that duplicate the English .ai site: canonical points at .ai.
 ALIAS_OF_AI = ("predictivelabs.eu", "predictivelabs.co.uk", "predictivelabs.com")
