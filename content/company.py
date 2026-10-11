@@ -40,3 +40,19 @@ LEGAL_ENTITIES = (
         "address": "19E Lomond Street, Takapuna, Auckland 0622",
     },
 )
+
+
+# Local entity shown first and named in the copyright on that language's site.
+LOCAL_ENTITY = {"lt": "Lithuania", "et": "Estonia"}
+COPYRIGHT = {"lt": "UAB „Predictive Labs“ (įmonės kodas 307863496)", "et": "Predictive Labs OÜ"}
+
+
+def entities_for(lang: str = "en"):
+    market = LOCAL_ENTITY.get(lang)
+    if not market:
+        return LEGAL_ENTITIES
+    return tuple(sorted(LEGAL_ENTITIES, key=lambda e: e["market"] != market))
+
+
+def copyright_holder(lang: str = "en") -> str:
+    return COPYRIGHT.get(lang, "Predictive Labs Ltd.")

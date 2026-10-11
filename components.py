@@ -13,7 +13,8 @@ from fasthtml.common import (
     Video, Source, Table, Thead, Tbody, Tr, Th, Td,
 )
 
-from content.company import LEGAL_ENTITIES, LEGAL_REGIONS
+from content.company import LEGAL_ENTITIES, LEGAL_REGIONS, entities_for, copyright_holder
+from utils.content_i18n import tc
 from utils.i18n import t, LANGUAGES, DEFAULT_LANG
 
 SITE_NAME = "Predictive Labs"
@@ -151,6 +152,13 @@ def _lang_dropdown(lang: str = "en"):
         )
         for code, info in LANGUAGES.items()
     ]
+    # Domain switch: explicit, persistent (?stay=1 sets pl_stay so geo never bounces you back).
+    if lang == "lt":
+        options.append(A("predictivelabs.ai · English ↗", href="https://predictivelabs.ai/?stay=1",
+                         cls="block mt-1 border-t border-line px-2.5 pt-2 pb-1.5 text-xs text-ink-muted hover:text-accent"))
+    else:
+        options.append(A("predictivelabs.lt · Lietuvių ↗", href="https://predictivelabs.lt/",
+                         cls="block mt-1 border-t border-line px-2.5 pt-2 pb-1.5 text-xs text-ink-muted hover:text-accent"))
     return Div(
         Button(
             current["flag"],
@@ -349,12 +357,12 @@ def Footer_(lang: str = "en"):
                                 Tbody(
                                     *[
                                         Tr(
-                                            Td(entity["market"], cls="px-4 py-3 font-medium text-ink"),
-                                            Td(entity["entity"], cls="px-4 py-3 text-ink-muted"),
+                                            Td(tc(entity["market"], lang), cls="px-4 py-3 font-medium text-ink"),
+                                            Td(tc(entity["entity"], lang), cls="px-4 py-3 text-ink-muted"),
                                             Td(entity["address"], cls="px-4 py-3 text-ink-muted"),
                                             cls="border-t border-line",
                                         )
-                                        for entity in LEGAL_ENTITIES
+                                        for entity in entities_for(lang)
                                         if entity["region"] == region
                                     ],
                                     cls="text-xs leading-5",
@@ -370,7 +378,7 @@ def Footer_(lang: str = "en"):
                 cls="mt-10 space-y-5",
             ),
             Div(
-                Div(f"© {__import__('datetime').datetime.now().year} Predictive Labs Ltd.", cls="text-ink-dim text-xs"),
+                Div(f"© {__import__('datetime').datetime.now().year} {copyright_holder(lang)}", cls="text-ink-dim text-xs"),
                 Div(
                     A("GitHub", href=GITHUB_URL, cls="text-ink-dim text-xs hover:text-accent mr-4"),
                     A("LinkedIn", href=LINKEDIN_URL, cls="text-ink-dim text-xs hover:text-accent mr-4"),
@@ -434,7 +442,7 @@ def PartnerCard(partner, *, lang="en"):
             cls="flex items-center justify-between gap-4",
         ),
         Heading(3, partner["name"], cls="mt-6"),
-        P(partner["description"], cls="mt-3 grow text-sm leading-6 text-ink-muted"),
+        P(tc(partner["description"], lang), cls="mt-3 grow text-sm leading-6 text-ink-muted"),
         A(
             t("partners_visit", lang) + " ↗",
             href=partner["url"],

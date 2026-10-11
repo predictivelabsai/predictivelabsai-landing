@@ -29,54 +29,58 @@ LANGUAGES: dict[str, dict] = {
 
 SUPPORTED_LANGS = set(LANGUAGES.keys())
 
-_ESTONIAN_IP_PREFIXES = (
-    "85.253.", "90.190.", "84.50.", "213.168.", "195.50.",
-    "62.65.", "88.196.", "86.43.", "193.40.", "194.126.",
-)
-_LATVIAN_IP_PREFIXES = (
-    "195.13.", "213.175.", "195.122.", "80.233.", "78.84.",
-)
-_LITHUANIAN_IP_PREFIXES = (
-    "82.135.", "78.56.", "78.57.", "78.58.", "78.60.",
-    "78.61.", "78.62.", "78.63.", "213.252.",
-)
-
-
-def _get_client_ip(request) -> str:
-    forwarded = (getattr(request, "headers", {}) or {}).get("x-forwarded-for", "")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
-    client = getattr(request, "client", None)
-    return client.host if client else ""
+# Languages advertised via hreflang / auto-selected by geo. Others stay
+# reachable from the switcher but are not pushed to visitors yet.
+PUBLISHED_LANGS = ("en", "lt")
 
 
 def detect_language(request) -> str:
-    ip = _get_client_ip(request)
-    if any(ip.startswith(p) for p in _ESTONIAN_IP_PREFIXES):
-        return "et"
-    if any(ip.startswith(p) for p in _LATVIAN_IP_PREFIXES):
-        return "lv"
-    if any(ip.startswith(p) for p in _LITHUANIAN_IP_PREFIXES):
-        return "lt"
-    return DEFAULT_LANG
+    """ccTLD (predictivelabs.lt -> lt) > visitor country (generic domains, humans only) > en."""
+    from utils.domains import domain_lang, request_host, is_generic, tld_of
+    lang = domain_lang(request)
+    if lang:
+        return lang
+    host = request_host(request)
+    if tld_of(host) is not None and not is_generic(host):
+        return DEFAULT_LANG
+    from utils.geo import detect_country, country_lang, is_bot
+    if is_bot(request):
+        return DEFAULT_LANG  # crawlers see the canonical English .ai page
+    lang = country_lang(detect_country(request))
+    return lang if lang in PUBLISHED_LANGS else DEFAULT_LANG
+
+
+def url_lang(request) -> str | None:
+    try:
+        code = (request.query_params.get("lang") or "").lower()
+    except Exception:
+        return None
+    return code if code in SUPPORTED_LANGS else None
 
 
 def get_lang(sess: dict[str, Any], request=None) -> str:
-    lang = (sess.get("lang") or "").lower()
-    if lang in SUPPORTED_LANGS:
-        return lang
-    if request:
-        detected = detect_language(request)
-        sess["lang"] = detected
-        return detected
+    """?lang= > manual choice for this host > detection. Same idea as CityTicker."""
+    from utils.domains import request_host
+    host = request_host(request) if request is not None else ""
+    q = url_lang(request) if request is not None else None
+    if q:
+        if isinstance(sess, dict):
+            sess.update(lang=q, lang_locked=True, lang_host=host)
+        return q
+    if isinstance(sess, dict) and sess.get("lang_locked") and sess.get("lang") in SUPPORTED_LANGS:
+        if not host or sess.get("lang_host") in (None, host):
+            return sess["lang"]
+    if request is not None:
+        return detect_language(request)
     return DEFAULT_LANG
 
 
-def set_lang(sess: dict[str, Any], lang: str) -> str:
+def set_lang(sess: dict[str, Any], lang: str, request=None) -> str:
+    from utils.domains import request_host
     code = (lang or "").lower()
     if code in SUPPORTED_LANGS:
-        sess["lang"] = code
-    return get_lang(sess)
+        sess.update(lang=code, lang_locked=True, lang_host=request_host(request) if request is not None else None)
+    return get_lang(sess, request)
 
 
 def t(key: str, lang: str = DEFAULT_LANG) -> str:
@@ -2129,8 +2133,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fi": "Agenttiset järjestelmät, hakuputkistot ja LLM:n tuotantokäyttöönotto.",
         "lt": "Agentinės sistemos, paieškos srautai ir LLM diegimas gamyboje.",
     },
-    "team_rl_role": {"en": "AI Engineer & Director"},
-    "team_rl_bio": {"en": "Data analysis and inference engineering. Economist and data scientist — BSc Economics with a Data Science minor and MSc Economics & Data Science, Tilburg University. AI Software Developer at Franklin | The DNA of Buildings, building AI and data-analytics systems. Based in Tallinn."},
+    "team_rl_role": {"en": "AI Engineer & Director", "lt": "DI inžinierius ir direktorius"},
+    "team_rl_bio": {"en": "Data analysis and inference engineering. Economist and data scientist — BSc Economics with a Data Science minor and MSc Economics & Data Science, Tilburg University. AI Software Developer at Franklin | The DNA of Buildings, building AI and data-analytics systems. Based in Tallinn.", "lt": "Duomenų analizė ir išvadų (inference) inžinerija. Ekonomistas ir duomenų mokslininkas — Tilburgo universiteto ekonomikos bakalauras (gretutinė duomenų mokslo kryptis) ir ekonomikos bei duomenų mokslo magistras. DI programinės įrangos kūrėjas bendrovėje „Franklin | The DNA of Buildings“, kuria DI ir duomenų analitikos sistemas. Gyvena Taline."},
     "team_cx_role": {
         "en": "Quantitative Research Consultant", "et": "Kvantitatiivse uurimistöö konsultant",
         "de": "Berater für quantitative Forschung", "fr": "Consultant en recherche quantitative",
@@ -3270,3 +3274,155 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "cs_sector_financial": {"en": "Financial services", "et": "Finantsteenused", "de": "Finanzdienstleistungen", "fr": "Services financiers", "sv": "Finansiella tjänster", "lv": "Finanšu pakalpojumi", "no": "Finansielle tjenester", "da": "Finansielle tjenester", "pl": "Usługi finansowe", "nl": "Financiële diensten", "fi": "Rahoituspalvelut", "lt": "Finansinės paslaugos"},
     "cs_sector_cross": {"en": "Cross-sector", "et": "Sektoriteülene", "de": "Sektorübergreifend", "fr": "Intersectoriel", "sv": "Tvärsektor", "lv": "Starpnozaru", "no": "Tverrsektoriell", "da": "Tværsektoriel", "pl": "Międzysektorowy", "nl": "Sectoroverstijgend", "fi": "Poikkisektoraalinen", "lt": "Tarpsektorinis"},
 }
+
+
+# ---------------------------------------------------------------------------
+# Lithuanian editorial revision (2026-10): natural business Lithuanian for the
+# predictivelabs.lt launch. Replaces earlier literal renderings.
+# ---------------------------------------------------------------------------
+_LT_REVISIONS: dict[str, str] = {
+    "cta_engage": "Bendradarbiaukime",
+    "partners_headline": "Specialistai, padedantys „Predictive Labs“ integruoti ir įgyvendinti sprendimus.",
+    "cta_body": "Dirbame su viešojo sektoriaus užsakovais Jungtinėje Karalystėje, Šiaurės šalyse, Beniliukse ir Baltijos šalyse. Aprašykite problemą — atsakysime, ar galime padėti.",
+    "home_headline_1": "Įrodymais grįsti sprendimai ",
+    "home_headline_2": "viešajai gerovei —",
+    "home_headline_3": " dideliu mastu.",
+    "home_lede": "„Predictive Labs“ kuria DI sistemas Europos viešosioms paslaugoms — sveikatos, gynybos, viešojo valdymo ir judumo srityse. Jos nuo pat pradžių projektuojamos taip, kad būtų audituojamos, o kur įmanoma — atviros.",
+    "home_cta_see": "Ką kuriame",
+    "home_precedent_heading": "Mūsų darbais pasitiki institucijos, kurioms tikslumas yra būtinas.",
+    "home_cap_heading": "Keturios kompetencijos, derinamos pagal programos poreikius.",
+    "home_capabilities": "Kompetencijos",
+    "home_cap_body": "Mes nesiūlome platformos. Siūlome komandą, kuri į kiekvieną projektą atsineša platformai būdingą discipliną — atkuriamus duomenų srautus, versijuojamus modelius, patikrintas užklausas ir atvirąjį kodą visur, kur tai leidžia teisės aktai ir sutartis.",
+    "home_where_heading": "Dirbame keturiose viešojo sektoriaus srityse — ir išlaikome komercinę patirtį.",
+    "home_selected_work": "Atrinkti projektai",
+    "home_selected_heading": "Kaip atrodo mūsų programos.",
+    "home_signal_heading": "Kasdien analizuojame duomenis, kuriais remiasi mūsų klientai.",
+    "home_news_subtitle": "Nuolat atnaujinama DI, valdžios, sveikatos, gynybos ir finansinių paslaugų naujienų apžvalga. Atnaujinama kas valandą; nuorodos atsidaro naujame skirtuke.",
+    "home_signal_body": "Viešosios paslaugos prasideda nuo viešųjų duomenų. Nuolat atnaujinamas NHS laukimo eilių, Europos gynybos išlaidų, mokinių pasiekimų atotrūkio, energijos gamybos struktūros ir pasirengimo DI vaizdas — kontekstas, kuriame veikia mūsų programos.",
+    "thesis_why_body2": "„Predictive Labs“ šia nuostata vadovaujasi nuo pirmos dienos: standartizuotos kompetencijos priklauso bendruomenei, konkrečiam klientui skirtas darbas lieka privatus, o kiekvienas duomenų srautas turi būti audituojamas nuo pat projektavimo. ES atvirojo kodo strategija šį požiūrį patvirtina visos Europos mastu.",
+    "pillar_geo": "Geoerdvinė analizė ir judumas",
+    "pillar_geo_body": "Kelionių kilmės ir paskirties matricos, anomalijų aptikimas ir situacijos vaizdai, sukurti naudojant atviruosius duomenis ir paskelbti kaip etaloniniai sprendimai.",
+    "pillar_doc_intel_body": "Informacijos išgavimas ir paieška teisės aktuose, klinikiniuose protokoluose, pirkimų dokumentuose ir teisiniuose tekstynuose — su audituojamomis nuorodomis į šaltinius.",
+    "pillar_agents": "Agentiniai procesai",
+    "pillar_agents_body": "Daugiapakopiai LLM agentai, veikiantys jūsų saugumo perimetre, su įdiegtu vertinimu ir žmogaus priežiūra.",
+    "sector_defense_body": "Sprendimų palaikymas gynybos, teisingumo ir ypatingos svarbos infrastruktūros srityse — aiškiai atskiriant DI pagalbą nuo žmogaus sprendimų.",
+    "sector_health_body": "Realaus pasaulio įrodymai, protokolų rengimas ir ligoninių veiklos valdymas — privatumą saugančiais, reguliavimo reikalavimus atitinkančiais duomenų srautais.",
+    "sector_public_body": "Eismo, planavimo ir savivaldybių analitika — paremta atviraisiais duomenimis ir pateikiama kartu su etaloniniais sprendimais.",
+    "sector_financial_body": "Mūsų komercinis pagrindas — reitingai, prognozavimas ir dokumentų analizė įmonių mastu. Šiandien tai apie 20 % mūsų veiklos.",
+    "platform_headline": "Darbo metodas, veikiantis kaip platforma.",
+    "platform_lede": "Esame konsultacinė įmonė — DI ir duomenų inžinierių, duomenų mokslininkų bei sričių ekspertų komanda. Platformai būdingą nuoseklumą užtikrina disciplina, kurią taikome kiekvienoje programoje: vienodi duomenų srautų principai, vienoda vertinimo sistema ir vienodi audito standartai.",
+    "platform_cap_heading": "Keturios tarpusavyje derančios kompetencijos.",
+    "platform_commit_eyebrow": "Mūsų įsipareigojimai",
+    "cases_headline": "Įgyvendinti projektai, o ne pažadai.",
+    "cases_lede": "Klientus įvardijame tik tada, kai tai leidžia sutartis, kitus pateikiame anonimiškai. Čia — šeši vykdomi Europos viešojo sektoriaus projektai ir trys komerciniai projektai, iš kurių išaugo mūsų praktika.",
+    "cases_current_heading": "Vykdomos viešojo sektoriaus programos.",
+    "cases_named_eyebrow": "Įvardyti klientai",
+    "cases_named_heading": "Mūsų komercinė patirtis.",
+    "signal_headline": "Viešojo sektoriaus duomenys, vizualizuoti taip pat kruopščiai, kaip dirbame programose.",
+    "signal_lede": "Penkios duomenų apžvalgos mūsų aptarnaujamuose sektoriuose. Kiekvienas skaičius paimtas iš įvardyto viešo duomenų rinkinio, šaltinis nurodytas po diagrama. Klientų duomenų čia nėra.",
+    "research_headline": "Standartizuotos kompetencijos atiteka bendruomenei.",
+    "research_lede": "Mūsų etaloniniai sprendimai viešojo sektoriaus problemoms skelbiami „GitHub“. Klientai gauna konkretų projektą, o metodas lieka bendruomenei, kad kitas užsakovas galėtų jį patikrinti.",
+    "research_platforms_eyebrow": "Veikiančios platformos",
+    "research_platforms_heading": "Tyrimai realiose rinkose.",
+    "research_visit": "Apsilankyti",
+    "team_headline": "Nedidelė komanda, kurią vienija darbo reikalaujama disciplina.",
+    "team_lede": "Sąmoningai esame nedideli — patyrę inžinieriai ir mokslininkai, atsakingi už rezultatą nuo pradžios iki pabaigos. Kai programai reikia specialių leidimų, kalbos ar papildomų pajėgumų, pasitelkiame patikimų partnerių tinklą.",
+    "contact_lede": "Dirbame su viešojo sektoriaus užsakovais Jungtinėje Karalystėje, Šiaurės šalyse, Beniliukse ir Baltijos šalyse, taip pat su atrinktais reguliuojamų sektorių verslo klientais. Aprašykite problemą — atsakysime, ar galime padėti.",
+    "contact_write_body": "Kiekvieną užklausą perskaitome patys. Pradžiai pakanka trumpai aprašyti užsakovą, problemą ir terminus.",
+    "sol_three_focal": "Trys pagrindinės kryptys šiame sektoriuje.",
+    "sol_looks_like": "Kaip tai atrodo konkrečioje programoje.",
+    "signal_cta_headline": "Norite to paties su savo duomenimis?",
+    "signal_cta_body": "„Signal“ — tai viešas vaizdas. Klientų projektuose tuos pačius metodus taikome uždariems ir reguliuojamiems duomenims — su valdysena, prieigos kontrole ir vertinimo sistema, kurių reikalauja reguliuojama veikla.",
+    "time_hours_ago": "prieš {n} val.",
+    "time_days_ago": "prieš {n} d.",
+    "plat_pillar_doc_body": "Kuriame dokumentų apdorojimo ir analizės srautus tiems dokumentams, kuriais iš tiesų grindžiama jūsų veikla — teisės aktams, protokolams, pirkimų dokumentams, reitingavimo metodikoms. Kiekviena ištrauka susieta su šaltiniu, kiekvieną atsakymą galima atkurti.",
+    "plat_pillar_forecast_body": "Nuo planinių operacijų poreikio iki viešojo sektoriaus pajamų — patikimus vidinius duomenis deriname su atviraisiais, alternatyviaisiais ir palydoviniais duomenimis. Modeliai versijuojami, tikrinami istoriniais duomenimis ir pateikiami kartu su vertinimo sistema.",
+    "plat_pillar_geo_body": "Eismo, zondinių transporto priemonių, ANPR ir infrastruktūros telemetrijos duomenis paverčiame kelionių kilmės ir paskirties matricomis, spūsčių profiliais ir operatyviniais situacijos vaizdais. Etaloniniai sprendimai, pvz., open-od-toolkit, lieka viešai prieinami.",
+    "plat_pillar_agents_body": "Daugiapakopiai LLM agentai, kurie planuoja, naudoja įrankius ir perduoda užduotis žmonėms, veikdami jūsų saugumo perimetre. Kiekvienas žingsnis vertinamas, registruojamas audito žurnale ir turi aiškų eskalavimo kelią.",
+    "commit_audit_title": "Audituojamumas nuo projektavimo",
+    "commit_audit_body": "Kiekvienas duomenų srautas versijuojamas; kiekvieną modelio rezultatą galima atsekti iki konkrečių įvesties duomenų, užklausos ir versijos.",
+    "commit_open_title": "Atvira ten, kur tai naudinga",
+    "commit_open_body": "Standartizuotos kompetencijos skelbiamos „GitHub“. Klientai gauna konkretų darbą, metodas lieka bendruomenei.",
+    "commit_gdpr_title": "BDAR — nuo pat pradžių",
+    "sol_reg_gdpr": "BDAR — nuo pat pradžių",
+    "commit_gdpr_body": "Pirmiausia — poveikio duomenų apsaugai vertinimas, tik tada architektūra. Duomenys nepalieka jurisdikcijos, nebent tai leidžia klientas ir teisės aktai.",
+    "commit_eval_title": "Pirmiau vertinimas, paskui mastas",
+    "commit_eval_body": "Prieš apdorodamas realią bylą modelis turi būti patikrintas su šimtu atidėtų bylų. Prieš pradėdamas veikti agentas turi atlaikyti „raudonosios komandos“ testus.",
+    "sol_defense_headline": "Sprendimų palaikymas ten, kur rizika yra operatyvinė.",
+    "sol_defense_lede": "Palydovinių vaizdų analitika, situacijos vaizdo įrankiai ir dokumentų analizė gynybos, teisingumo ir ypatingos svarbos infrastruktūros institucijoms — aiškiai atskiriant DI pagalbą nuo žmogaus sprendimų.",
+    "sol_health_headline": "Realaus pasaulio įrodymai ir ligoninių veikla — atsakingai tvarkant pacientų duomenis.",
+    "sol_health_lede": "Privatumą sauganti nacionalinių registrų analitika, protokolų rengimo automatizavimas sveikatos technologijų vertinimui ir DI taikomųjų programų kūrimas ligoninių sistemoms — laikantis ES DI akto ir klinikinių duomenų tvarkymo reikalavimų.",
+    "sol_public_lede": "Eismo, judumo, savivaldybių planavimo ir duomenų kokybės programos Europos viešosioms institucijoms — paremtos atviraisiais duomenimis, pateikiamos su etaloniniais sprendimais ir sąžiningai įkainotos pagal pirkimo biudžetą.",
+    "sol_financial_headline": "Iš čia esame kilę — ir čia vis dar dirbame, rinkdamiesi projektus.",
+    "sol_financial_lede": "Reitingavimo modeliai, pajamų prognozavimas ir dokumentų analizė reguliuojamose institucijose. Finansinės paslaugos — mūsų praktikos pagrindas; šiandien jos sudaro maždaug penktadalį mūsų veiklos.",
+    "footer_tagline": "DI viešiesiems rezultatams.",
+    "sol_def_pillar1_title": "Palydovinė ir geoerdvinė žvalgyba",
+    "sol_def_pillar1_body": "Nuo „Sentinel-2“ vaizdų apdorojimo iki pokyčių aptikimo ir OSINT duomenų integravimo — naudojant atkuriamus atvirojo kodo sprendimus.",
+    "sol_def_pillar2_body": "Integruoti operatyviniai vaizdai savivaldybių ir nacionaliniams operatoriams — jutiklių duomenų srautai, anomalijų aptikimas, incidentų santraukos.",
+    "sol_def_pillar3_body": "Duomenų saugyklų ir analitinių skydelių pagrindai probacijos, priežiūros ir vykdymo institucijoms, taikant griežčiausius prieigos kontrolės reikalavimus.",
+    "sol_health_pillar1_body": "Duomenų srautai, apimantys stacionaro pacientų įrašus, vaistų išdavimo duomenis ir gyventojų registrus, su protokolų šablonais, trumpinančiais stebėsenos ciklus.",
+    "sol_health_pillar2_title": "Ligoninių veikla",
+    "sol_health_pillar2_body": "Planinių paslaugų atkūrimo prognozavimas, pajėgumų planavimas ir DI taikomųjų programų kūrimas didžiausių Europos ligoninių sistemų preliminariosiose sutartyse.",
+    "sol_health_pillar3_title": "Klinikinių dokumentų analizė",
+    "sol_health_pillar3_body": "Informacijos išgavimas iš klinikinių ir reguliavimo dokumentų bei jų struktūrizuotas apibendrinimas, tikrinamas žmogaus.",
+    "sol_pub_pillar1_title": "Eismo bei kelionių kilmės ir paskirties analizė",
+    "sol_pub_pillar1_body": "Regiono ir miesto lygmens judumo analizė, paremta ANPR, „Bluetooth“ ir atvirųjų duomenų integravimu, metodiką skelbiant „GitHub“.",
+    "sol_pub_pillar2_body": "Duomenų kokybės sistemos, dinaminės pirkimų sistemos ir ilgalaikiai analitikos užsakymai savivaldybėms.",
+    "sol_fin_pillar1_body": "Gamybinio lygio mašininis mokymasis kredito ir vertybinių popierių reitingams, užtikrinant reguliavimo reikalaujamą audituojamumą.",
+    "sol_fin_pillar3_title": "Dokumentų analizė dideliu mastu",
+    "sol_fin_pillar3_body": "Informacijos išgavimas, klasifikavimas ir paieška prospektuose, teikiamuose dokumentuose ir reitingavimo metodikose.",
+    "sol_reg_human_authority": "Galutinį sprendimą priima žmogus",
+    "sol_reg_open_source": "Atvirasis kodas pagal nutylėjimą",
+    "sol_reg_reference": "Etaloniniai sprendimai",
+    "sol_reg_interop": "Sąveika",
+    "sol_reg_prod_ml": "Gamybinės ML operacijos",
+    "sol_reg_enterprise": "Įmonių mastas",
+    "sig_health_summary": "Laukiančiųjų sąrašai, laukimo trukmės medianos ir 18 savaičių terminą viršijančių atvejų skaičiai pagal specialybes — pagrindinis planinės sveikatos priežiūros atkūrimo analitikos rodiklių rinkinys.",
+    "sig_education_summary": "„Key Stage 4 Attainment 8“ rezultatai pagal regionus ir teisę į nemokamą maitinimą mokykloje — socialinės atskirties atotrūkis viename vaizde.",
+    "cs_nordic_health_rwd_status": "Vykdomas projektas",
+    "cs_uk_traffic_od_status": "Vykdomas projektas",
+    "cs_nordic_city_signal_status": "Vykdomas projektas",
+    "cs_nordic_health_panel_status": "Vykdomas projektas",
+    "cs_nl_justice_dataplatform_status": "Vykdomas projektas",
+    "cs_dk_data_quality_status": "Vykdomas projektas",
+    "label_active_engagement": "Vykdomas projektas",
+    "hero_engagements": "Vykdomi projektai",
+    "cs_dbrs_rmbs_status": "Įgyvendinta", "cs_microsoft_isd_status": "Įgyvendinta", "cs_arm_forecasting_status": "Įgyvendinta",
+    "label_delivered": "Įgyvendinta",
+    "cs_nordic_health_rwd_approach": "Privatumą saugantis duomenų srautas LPR3 lygio stacionaro pacientų, vaistų išdavimo ir gyventojų registro duomenims susieti, su pakartotinai naudojamais protokolų šablonais, sutrumpinusiais stebėsenos ciklą nuo devynių iki trijų mėnesių.",
+    "cs_nordic_health_rwd_capability": "Reguliavimo reikalavimus atitinkanti epidemiologija, „Git“ versijomis valdomas analitinis kodas, prisiekusiojo vertėjo vertimai, kas mėnesį vykstantys valdymo susitikimai.",
+    "cs_uk_traffic_od_title": "Regiono masto eismo bei kelionių kilmės ir paskirties analizė",
+    "cs_uk_traffic_od_problem": "Keturiolika vietos valdžios institucijų, fragmentuoti ANPR ir „Bluetooth“ duomenų srautai bei brangi metinė komercinė GPS licencija, kurią taryba norėjo pakeisti.",
+    "cs_uk_traffic_od_approach": "Dvigubai suvaržyti gravitacijos modeliai, sujungti su JK surašymo ir Transporto departamento atviraisiais duomenimis, pateikiami interaktyviame skydelyje ir per REST API. Metodika paskelbta „GitHub“ kaip open-od-toolkit.",
+    "cs_uk_traffic_od_capability": "Atvirojo kodo alternatyva komerciniams judumo duomenims; jokios priklausomybės nuo tiekėjo.",
+    "cs_nordic_city_signal_problem": "Miesto operatoriams reikėjo vieningo transporto srauto duomenų situacijos vaizdo su greičio anomalijų aptikimu ir istorinių tendencijų kontekstu.",
+    "cs_nordic_city_signal_approach": "Anonimizuotų zondinių duomenų srautinis priėmimas, statistinis pokyčio taškų aptikimas koridorių greičiuose ir LLM padedamos rengti incidentų santraukos, pateikiamos operatoriaus pulte.",
+    "cs_nordic_city_signal_capability": "Nuo neapdorotų signalų iki operatyvinių įžvalgų — vienoje integruotoje valdymo sąsajoje.",
+    "cs_nordic_health_panel_problem": "Kelių tiekėjų poreikis DI taikomųjų programų kūrimui ir „lakehouse“ duomenų platformos priežiūrai penkiose regioninėse sveikatos institucijose, laikantis ES DI akto ir klinikinių duomenų reikalavimų.",
+    "cs_nordic_health_panel_approach": "Įtraukti į tiekėjų ekspertų sąrašą dviem kryptims — DI taikomųjų programų kūrimui (LLM, agentiniai procesai) ir duomenų inžinerijai („Data Vault 2.0“ platformoje „Databricks“) — laikantis sveikatos sektoriaus reikalavimų.",
+    "cs_nordic_health_panel_capability": "Pasirengimas ES DI aktui, klinikinių duomenų tvarkymo disciplina, gebėjimas dirbti dviem kryptimis vienu metu.",
+    "cs_nl_justice_dataplatform_buyer": "Nacionalinė probacijos tarnyba, kartu su partneriu",
+    "cs_nl_justice_dataplatform_problem": "Sujungti trijų teisingumo institucijų probacijos procesų duomenis į vieną analitikos platformą, palaikančią daugiau nei 200 skydelių ir daugiau nei 200 individualių analizių per metus.",
+    "cs_nl_justice_dataplatform_approach": "Projektas vykdomas kartu su Nyderlanduose įsikūrusiu pagrindiniu rangovu, užtikrinančiu olandų kalbą ir teisingumo sektoriaus leidimus; mes atsakome už duomenų inžinerijos, DI įžvalgų ir skydelių sluoksnius.",
+    "cs_nl_justice_dataplatform_capability": "Darbas jautriausiose viešojo sektoriaus srityse, užtikrinant aiškią duomenų apsaugos kontrolę.",
+    "cs_dk_data_quality_problem": "Ilgalaikis pagrindas ad hoc duomenų inžinerijos, profiliavimo ir kokybės užtikrinimo darbams savivaldybės duomenų ištekliuose.",
+    "cs_dk_data_quality_approach": "Vieną kartą įtraukti į dinaminę pirkimų sistemą; atskiri užsakymai vykdomi naudojant mūsų atvirojo kodo duomenų kokybės įrankius su deklaratyviomis taisyklėmis ir DI padedamu anomalijų aptikimu.",
+    "cs_dk_data_quality_capability": "Patikrinama, audituojama alternatyva uždaroms įmonių duomenų kokybės sistemoms.",
+    "cs_dbrs_rmbs_title": "ES RMBS reitingavimo modeliai daugiau nei 2 mlrd. įrašų",
+    "cs_dbrs_rmbs_problem": "Europos gyvenamojo būsto paskolomis užtikrintų vertybinių popierių reitingavimo modeliai, integruojantys daugiau nei du milijardus nestruktūrizuotų paskolų lygmens duomenų įrašų.",
+    "cs_dbrs_rmbs_approach": "Dokumentų priėmimo ir duomenų išgavimo srautai „XGBoost“ reitingavimo modeliams, įdiegti per „MLflow“ ir visiškai audituojami reguliavimo tikslais.",
+    "cs_dbrs_rmbs_capability": "Dokumentų apdorojimas dideliu mastu, reguliavimo audito sekimas, gamybinės ML operacijos.",
+    "cs_microsoft_isd_title": "Įmonių generatyvinio DI ir RAG sprendimų diegimas pramonėje",
+    "cs_microsoft_isd_problem": "Europos įmonių klientams energetikos, biotechnologijų ir finansinių paslaugų sektoriuose reikėjo gamybinės kokybės paieška papildyto generavimo (RAG) nestruktūrizuotiems PDF dokumentams ir platformų duomenims.",
+    "cs_microsoft_isd_approach": "Dokumentų priėmimo srautai, išmanusis duomenų išgavimas ir integracija su įmonių platformomis „Microsoft“ ISD programos rėmuose.",
+    "cs_microsoft_isd_capability": "RAG reguliuojamose įmonių aplinkose, projektai keliuose sektoriuose.",
+    "cs_arm_forecasting_problem": "Strateginis licencinių ir nelicencinių pajamų tendencijų prognozavimas, reikalaujantis išorinių ir alternatyvių duomenų rinkinių integravimo.",
+    "cs_arm_forecasting_approach": "Pažangūs laiko eilučių modeliai, praturtinti alternatyviųjų duomenų požymiais; gamybiniai duomenų srautai ir įmonės masto istorinis testavimas.",
+    "cs_arm_forecasting_capability": "Gamybiniai duomenų srautai, alternatyviųjų duomenų integracija, įmonės mastas.",
+    "resilience_c2_title": "Audituojamumas",
+    "resilience_c3_body": "Europoje veikianti prižiūrėtojų bendruomenė ir laisvė kurti savo kodo atšakas apsaugo organizacijas nuo geopolitinio spaudimo, valiutų svyravimų ir vienašalių licencijavimo sąlygų pakeitimų.",
+    "os_resilience_body2": "Viešajam sektoriui tai ypač svarbu: tęstinumas (jokios priklausomybės nuo tiekėjo ir priverstinio produkto nutraukimo), audituojamumas (kodą galima tikrinti saugumo ir atitikties požiūriu) ir suverenitetas (duomenys ir diegimas lieka Europos jurisdikcijoje). Būtent todėl kiekviena šio rinkinio programa platinama pagal MIT licenciją ir gali būti diegiama savo infrastruktūroje — pritaikykite, paleiskite savo serveriuose ir plėtokite be niekieno leidimo.",
+}
+for _k, _v in _LT_REVISIONS.items():
+    if _k in TRANSLATIONS:
+        TRANSLATIONS[_k]["lt"] = _v

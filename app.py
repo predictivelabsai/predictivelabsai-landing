@@ -25,7 +25,10 @@ from content.partners import PARTNERS
 from content.company import LEGAL_ENTITIES
 from content import signal as signal_mod
 from content import news as news_mod
-from utils.i18n import t, get_lang, set_lang
+from utils.i18n import t, get_lang, set_lang, PUBLISHED_LANGS
+from utils import domains as dom
+from utils import geo
+from utils.content_i18n import tc
 
 # Kick off the background RSS refresher once at import time so page renders
 # never block on upstream fetches.
@@ -39,13 +42,71 @@ def _lang(request: Request) -> str:
     return get_lang(request.session, request)
 
 
+STAY_COOKIE = "pl_stay"  # set by any manual language/domain choice -> no geo redirect on this host
+_NO_GEO_PREFIXES = ("/static", "/lang", "/api", "/favicon", "/robots", "/sitemap", "/health")
+
+
+def geo_redirect_target(request: Request) -> str | None:
+    """Return the ccTLD URL a human visitor on a generic domain should be sent to, else None."""
+    if request.method not in ("GET", "HEAD"):
+        return None
+    path = request.url.path
+    if path.startswith(_NO_GEO_PREFIXES) or "." in path.rsplit("/", 1)[-1]:
+        return None
+    host = dom.request_host(request)
+    if not dom.is_generic(host):
+        return None  # ccTLDs and unknown hosts (localhost, sslip) never redirect -> no loops
+    qp = request.query_params
+    if "lang" in qp or "stay" in qp or request.cookies.get(STAY_COOKIE):
+        return None
+    if geo.is_bot(request):
+        return None  # search engines index each domain as-is
+    target = dom.geo_redirect_map().get(geo.detect_country(request) or "")
+    if not target or target == host:
+        return None
+    q = request.url.query
+    return f"https://{target}{path}" + (f"?{q}" if q else "")
+
+
+async def geo_and_seo(request: Request, call_next):
+    target = geo_redirect_target(request)
+    if target:
+        return RedirectResponse(target, status_code=302, headers={"Cache-Control": "no-store", "Vary": "*"})
+    response = await call_next(request)
+    if "stay" in request.query_params or "lang" in request.query_params:
+        response.set_cookie(STAY_COOKIE, "1", max_age=60 * 60 * 24 * 365, samesite="lax", secure=request.url.scheme == "https" or request.headers.get("x-forwarded-proto") == "https")
+    ctype = response.headers.get("content-type", "")
+    if request.method == "GET" and ctype.startswith("text/html") and response.status_code == 200:
+        body = b"".join([chunk async for chunk in response.body_iterator])
+        if b"</head>" in body and b'rel="canonical"' not in body:
+            import re as _re
+            m = _re.search(rb'<html[^>]*lang="([a-z-]+)"', body)
+            lang = m.group(1).decode() if m else "en"
+            tags = dom.head_tags(request, request.url.path, lang, PUBLISHED_LANGS).encode()
+            body = body.replace(b"</head>", tags + b"</head>", 1)
+        from starlette.responses import Response as _Resp
+        new = _Resp(body, status_code=response.status_code)
+        new.raw_headers = [(k, v) for k, v in response.raw_headers if k.lower() != b"content-length"] + [
+            (b"content-length", str(len(body)).encode())
+        ]
+        return new
+    return response
+
+
+from starlette.middleware.base import BaseHTTPMiddleware  # noqa: E402
+
+app.add_middleware(BaseHTTPMiddleware, dispatch=geo_and_seo)
+
+
 @rt("/lang", methods=["POST"])
 async def lang_switch(request: Request):
     form = await request.form()
     code = (form.get("lang") or "").strip()
     if code:
-        set_lang(request.session, code)
-    return JSONResponse({"ok": True})
+        set_lang(request.session, code, request)
+    resp = JSONResponse({"ok": True})
+    resp.set_cookie(STAY_COOKIE, "1", max_age=60 * 60 * 24 * 365, samesite="lax")
+    return resp
 
 
 # ---------- /  Home ----------
@@ -560,12 +621,12 @@ def open_source(request: Request):
         ),
         Section_(
             Div(
-                Eyebrow("Open-source app suite"),
-                Heading(2, "Open Source Enterprise", cls="mt-4 max-w-3xl"),
+                Eyebrow(tc("Open-source app suite", lang)),
+                Heading(2, tc("Open Source Enterprise", lang), cls="mt-4 max-w-3xl"),
                 P(
-                    "A complete suite of open-source business apps — CRM, helpdesk, ERP, HR, "
+                    tc("A complete suite of open-source business apps — CRM, helpdesk, ERP, HR, "
                     "mail, analytics and more — each with a built-in AI assistant. Free to use, "
-                    "self-hostable, and yours to extend.",
+                    "self-hostable, and yours to extend.", lang),
                     cls="mt-6 text-ink-muted max-w-3xl leading-relaxed",
                 ),
                 cls="mb-14",
@@ -573,8 +634,8 @@ def open_source(request: Request):
             *[
                 Div(
                     Div(
-                        Span(grp["category"], cls="text-ink font-medium"),
-                        Span(grp["blurb"], cls="ml-3 text-ink-muted text-sm"),
+                        Span(tc(grp["category"], lang), cls="text-ink font-medium"),
+                        Span(tc(grp["blurb"], lang), cls="ml-3 text-ink-muted text-sm"),
                         cls="flex items-baseline mb-5 pb-3 border-b border-line",
                     ),
                     Div(
@@ -584,15 +645,15 @@ def open_source(request: Request):
                                     Div(
                                         Span(app["name"], cls="font-semibold text-ink"),
                                         Span(
-                                            app["feature"],
+                                            tc(app["feature"], lang),
                                             cls="ml-auto text-[10px] font-mono tracking-widest px-2 py-0.5 rounded-full border border-accent text-accent",
                                         ),
                                         cls="flex items-center mb-3",
                                     ),
-                                    P(app["tagline"], cls="text-ink-muted text-sm leading-relaxed mb-4"),
+                                    P(tc(app["tagline"], lang), cls="text-ink-muted text-sm leading-relaxed mb-4"),
                                     Div(
-                                        Span("Open source · MIT", cls="text-[11px] text-ink-muted"),
-                                        Span("View →", cls="ml-auto text-accent text-sm"),
+                                        Span(tc("Open source · MIT", lang), cls="text-[11px] text-ink-muted"),
+                                        Span(tc("View →", lang), cls="ml-auto text-accent text-sm"),
                                         cls="flex items-center",
                                     ),
                                     cls="p-6 rounded-2xl bg-bg-elevated border border-line hover:border-accent/50 transition-colors h-full",
@@ -625,8 +686,8 @@ def open_source(request: Request):
                                 Span(r["relevance"], cls=f"ml-auto text-[10px] font-mono tracking-widest px-2 py-0.5 rounded-full border {'border-accent text-accent' if r['relevance']=='HIGH' else 'border-line text-ink-muted'}"),
                                 cls="flex items-center mb-4",
                             ),
-                            P(r["tagline"], cls="text-ink-muted text-sm leading-relaxed mb-4"),
-                            Div(*[Pill(tag) for tag in r["tags"]], cls="flex flex-wrap gap-2"),
+                            P(tc(r["tagline"], lang), cls="text-ink-muted text-sm leading-relaxed mb-4"),
+                            Div(*[Pill(tc(tag, lang)) for tag in r["tags"]], cls="flex flex-wrap gap-2"),
                             cls="p-6 rounded-2xl bg-bg-elevated border border-line hover:border-accent/50 transition-colors h-full",
                         ),
                         href=r["url"],
@@ -649,7 +710,7 @@ def open_source(request: Request):
                     A(
                         Div(
                             Heading(3, r["name"], cls="mb-3"),
-                            P(r["tagline"], cls="text-ink-muted text-sm leading-relaxed mb-5"),
+                            P(tc(r["tagline"], lang), cls="text-ink-muted text-sm leading-relaxed mb-5"),
                             Div(
                                 Span(t("research_visit", lang) + " ", cls="text-accent text-sm"),
                                 Span("→", cls="text-accent text-sm"),
